@@ -1,0 +1,49 @@
+﻿using System.Collections.Generic;
+
+namespace Cayd.AspNetCore.FlexLog.Options
+{
+    public class FlexLogOptions
+    {
+        public static readonly string OptionKey = "FlexLog";
+
+        public int? BufferLimit { get; set; }
+        public int? TimerInSeconds { get; set; }
+        public string? CorrelationIdHeaderKey { get; set; }
+        public long? RequestBodySizeLimitInBytes { get; set; }
+        public LogDetailOption? LogDetails { get; set; }
+
+        public class LogDetailOption
+        {
+            public ClaimOption? Claims { get; set; }
+            public HeaderOption? Headers { get; set; }
+            public RequestBodyOption? RequestBody { get; set; }
+            public ResponseBodyOption? ResponseBody { get; set; }
+
+            public class ClaimOption
+            {
+                public bool? Enabled { get; set; }
+                public List<string>? IncludedTypes { get; set; }
+                public List<string>? IgnoredTypes { get; set; }
+            }
+
+            public class HeaderOption
+            {
+                public bool? Enabled { get; set; }
+                public List<string>? IncludedKeys { get; set; }
+                public List<string>? IgnoredKeys { get; set; }
+            }
+
+            public class RequestBodyOption
+            {
+                public bool? Enabled { get; set; }
+                public List<string>? RedactedKeys { get; set; }
+            }
+
+            public class ResponseBodyOption
+            {
+                public bool? Enabled { get; set; }
+                public List<string>? RedactedKeys { get; set; }
+            }
+        }
+    }
+}
