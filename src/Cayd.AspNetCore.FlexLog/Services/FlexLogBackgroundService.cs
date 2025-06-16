@@ -76,7 +76,10 @@ namespace Cayd.AspNetCore.FlexLog.Services
                 }
                 else
                 {
-                    await FlushSinksAsync();
+                    if (_buffer.Count > 0)
+                    {
+                        await FlushSinksAsync();
+                    }
                 }
             }
 
