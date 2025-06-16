@@ -48,6 +48,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private readonly bool _responseBodyOptionEnabled;
         private readonly HashSet<string> _redactedKeysFromResponseBody;
 
+        private readonly bool _queryStringOptionEnabled;
+
         public FlexLogMiddleware(RequestDelegate next, IOptions<FlexLogOptions> loggingOptions)
         {
             _next = next;
@@ -114,6 +116,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 _redactedKeysFromResponseBody = new HashSet<string>();
             }
+
+            _queryStringOptionEnabled = loggingOptions.Value.LogDetails?.QueryString?.Enabled ?? true;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -131,6 +135,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 AddClaimsToLogContext(context, logContext);
                 AddHeadersToLogContext(context, logContext);
                 AddRequestLineToLogContext(context, logContext);
+                AddQueryStringToLogContext(context, logContext);
 
                 await AddRequestBodyToLogContext(context, logContext);
 
@@ -236,6 +241,14 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private void AddRequestLineToLogContext(HttpContext context, FlexLogContext logContext)
         {
             logContext.RequestLine = $"{context.Request.Method} {context.Request.Path}";
+        }
+
+        private void AddQueryStringToLogContext(HttpContext context, FlexLogContext logContext)
+        {
+            if (!_queryStringOptionEnabled)
+                return;
+
+            logContext.QueryString = context.Request.QueryString.Value;
         }
 
         private async Task AddRequestBodyToLogContext(HttpContext context, FlexLogContext logContext)

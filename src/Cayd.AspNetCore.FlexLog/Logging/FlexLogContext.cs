@@ -15,6 +15,8 @@ namespace Cayd.AspNetCore.FlexLog.Logging
 
         public IDictionary<string, string?> Headers { get; set; }
 
+        public string? QueryString { get; set; }
+
         public string RequestLine { get; set; }
         public string? RequestBodyContentType { get; set; }
         public byte[]? RequestBodyRaw { get; set; }

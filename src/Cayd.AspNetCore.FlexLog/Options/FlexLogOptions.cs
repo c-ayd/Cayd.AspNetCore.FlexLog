@@ -17,6 +17,7 @@ namespace Cayd.AspNetCore.FlexLog.Options
             public HeaderOption? Headers { get; set; }
             public RequestBodyOption? RequestBody { get; set; }
             public ResponseBodyOption? ResponseBody { get; set; }
+            public QueryStringOption? QueryString { get; set; }
 
             public class ClaimOption
             {
@@ -44,6 +45,11 @@ namespace Cayd.AspNetCore.FlexLog.Options
             {
                 public bool? Enabled { get; set; }
                 public List<string>? RedactedKeys { get; set; }
+            }
+
+            public class QueryStringOption
+            {
+                public bool? Enabled { get; set; }
             }
         }
     }
