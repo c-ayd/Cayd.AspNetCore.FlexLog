@@ -35,27 +35,32 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private readonly bool _claimOptionEnabled;
         private readonly HashSet<string> _includedClaimTypes;
         private readonly HashSet<string> _ignoredClaimTypes;
+        private readonly List<string> _ignoredRoutesForClaims;
 
         private readonly bool _headerOptionEnabled;
         private readonly string? _correlationIdKey;
         private readonly HashSet<string> _includedHeaderKeys;
         private readonly HashSet<string> _ignoredHeaderKeys;
+        private readonly List<string> _ignoredRoutesForHeaders;
 
         private readonly bool _requestBodyOptionEnabled;
         private readonly long _requestBodySizeLimit;
         private readonly HashSet<string> _redactedKeysFromRequestBody;
+        private readonly List<string> _ignoredRoutesForRequestBody;
 
         private readonly bool _responseBodyOptionEnabled;
         private readonly HashSet<string> _redactedKeysFromResponseBody;
+        private readonly List<string> _ignoredRoutesForResponseBody;
 
         private readonly bool _queryStringOptionEnabled;
+        private readonly List<string> _ignoredRoutesForQueryString;
 
         public FlexLogMiddleware(RequestDelegate next, IOptions<FlexLogOptions> loggingOptions)
         {
             _next = next;
 
-            _ignoredRoutes = loggingOptions.Value.IgnoredRoutes != null ?
-                new List<string>(loggingOptions.Value.IgnoredRoutes) :
+            _ignoredRoutes = loggingOptions.Value.IgnoredRoutes != null ? 
+                loggingOptions.Value.IgnoredRoutes : 
                 new List<string>();
 
             _claimOptionEnabled = loggingOptions.Value.LogDetails?.Claims?.Enabled ?? true;
@@ -67,11 +72,15 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _ignoredClaimTypes = loggingOptions.Value.LogDetails?.Claims?.IgnoredTypes != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.Claims.IgnoredTypes, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
+                _ignoredRoutesForClaims = loggingOptions.Value.LogDetails?.Claims?.IgnoredRoutes != null ?
+                    loggingOptions.Value.LogDetails.Claims.IgnoredRoutes :
+                    new List<string>();
             }
             else
             {
                 _includedClaimTypes = new HashSet<string>();
                 _ignoredClaimTypes = new HashSet<string>();
+                _ignoredRoutesForClaims = new List<string>();
             }
 
             _headerOptionEnabled = loggingOptions.Value.LogDetails?.Headers?.Enabled ?? true;
@@ -84,11 +93,16 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _ignoredHeaderKeys = loggingOptions.Value.LogDetails?.Headers?.IgnoredKeys != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.Headers.IgnoredKeys, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
+                _ignoredRoutesForHeaders = loggingOptions.Value.LogDetails?.Headers?.IgnoredRoutes != null ?
+                    loggingOptions.Value.LogDetails.Headers.IgnoredRoutes :
+                    new List<string>();
             }
             else
             {
+                _correlationIdKey = null;
                 _includedHeaderKeys = new HashSet<string>();
                 _ignoredHeaderKeys = new HashSet<string>();
+                _ignoredRoutesForHeaders = new List<string>();
             }
 
             _requestBodyOptionEnabled = loggingOptions.Value.LogDetails?.RequestBody?.Enabled ?? true;
@@ -98,11 +112,15 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _redactedKeysFromRequestBody = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.RequestBody.RedactedKeys, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
+                _ignoredRoutesForRequestBody = loggingOptions.Value.LogDetails?.RequestBody?.IgnoredRoutes != null ?
+                    loggingOptions.Value.LogDetails.RequestBody.IgnoredRoutes :
+                    new List<string>();
             }
             else
             {
                 _requestBodySizeLimit = _defaultRequestBodySizeLimit;
                 _redactedKeysFromRequestBody = new HashSet<string>();
+                _ignoredRoutesForRequestBody = new List<string>();
             }
 
             _responseBodyOptionEnabled = loggingOptions.Value.LogDetails?.ResponseBody?.Enabled ?? true;
@@ -111,18 +129,32 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _redactedKeysFromResponseBody = loggingOptions.Value.LogDetails?.ResponseBody?.RedactedKeys != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.ResponseBody.RedactedKeys, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
+                _ignoredRoutesForResponseBody = loggingOptions.Value.LogDetails?.ResponseBody?.IgnoredRoutes != null ?
+                    loggingOptions.Value.LogDetails.ResponseBody.IgnoredRoutes :
+                    new List<string>();
             }
             else
             {
                 _redactedKeysFromResponseBody = new HashSet<string>();
+                _ignoredRoutesForResponseBody = new List<string>();
             }
 
             _queryStringOptionEnabled = loggingOptions.Value.LogDetails?.QueryString?.Enabled ?? true;
+            if (_queryStringOptionEnabled)
+            {
+                _ignoredRoutesForQueryString = loggingOptions.Value.LogDetails?.QueryString?.IgnoredRoutes != null ?
+                    loggingOptions.Value.LogDetails.QueryString.IgnoredRoutes :
+                    new List<string>();
+            }
+            else
+            {
+                _ignoredRoutesForQueryString = new List<string>();
+            }
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (IsRouteIgnored(context))
+            if (IsRouteIgnored(context, _ignoredRoutes))
             {
                 await _next(context);
             }
@@ -132,14 +164,14 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
                 SetLogId(context, logContext);
 
-                AddClaimsToLogContext(context, logContext);
-                AddHeadersToLogContext(context, logContext);
+                AddClaimsToLogContext(context, logContext, _ignoredRoutesForClaims);
+                AddHeadersToLogContext(context, logContext, _ignoredRoutesForHeaders);
                 AddRequestLineToLogContext(context, logContext);
-                AddQueryStringToLogContext(context, logContext);
+                AddQueryStringToLogContext(context, logContext, _ignoredRoutesForQueryString);
 
-                await AddRequestBodyToLogContext(context, logContext);
+                await AddRequestBodyToLogContext(context, logContext, _ignoredRoutesForRequestBody);
 
-                if (_requestBodyOptionEnabled)
+                if (_requestBodyOptionEnabled && !IsRouteIgnored(context, _ignoredRoutesForResponseBody))
                 {
                     await AddResponseBodyToLogContext(context, logContext);
                 }
@@ -162,10 +194,10 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
         }
 
-        private bool IsRouteIgnored(HttpContext context)
+        private bool IsRouteIgnored(HttpContext context, ICollection<string> ignoredRoutes)
         {
-            return _ignoredRoutes.Count > 0 &&
-                _ignoredRoutes.Any(route => context.Request.Path.StartsWithSegments(route, StringComparison.OrdinalIgnoreCase));
+            return ignoredRoutes.Count > 0 &&
+                ignoredRoutes.Any(route => context.Request.Path.StartsWithSegments(route, StringComparison.OrdinalIgnoreCase));
         }
 
         private void SetLogId(HttpContext context, FlexLogContext logContext)
@@ -180,9 +212,9 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
         }
 
-        private void AddClaimsToLogContext(HttpContext context, FlexLogContext logContext)
+        private void AddClaimsToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)
         {
-            if (!_claimOptionEnabled)
+            if (!_claimOptionEnabled || IsRouteIgnored(context, ignoredRoutes))
                 return;
 
             if (_includedClaimTypes.Count > 0)
@@ -213,9 +245,9 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
         }
 
-        private void AddHeadersToLogContext(HttpContext context, FlexLogContext logContext)
+        private void AddHeadersToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)
         {
-            if (!_headerOptionEnabled)
+            if (!_headerOptionEnabled || IsRouteIgnored(context, ignoredRoutes))
                 return;
 
             if (_includedHeaderKeys.Count > 0)
@@ -243,17 +275,17 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             logContext.RequestLine = $"{context.Request.Method} {context.Request.Path}";
         }
 
-        private void AddQueryStringToLogContext(HttpContext context, FlexLogContext logContext)
+        private void AddQueryStringToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)
         {
-            if (!_queryStringOptionEnabled)
+            if (!_queryStringOptionEnabled || IsRouteIgnored(context, ignoredRoutes))
                 return;
 
             logContext.QueryString = context.Request.QueryString.Value;
         }
 
-        private async Task AddRequestBodyToLogContext(HttpContext context, FlexLogContext logContext)
+        private async Task AddRequestBodyToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)
         {
-            if (!_requestBodyOptionEnabled)
+            if (!_requestBodyOptionEnabled || IsRouteIgnored(context, ignoredRoutes))
                 return;
 
             logContext.RequestBodyContentType = context.Request.ContentType;
