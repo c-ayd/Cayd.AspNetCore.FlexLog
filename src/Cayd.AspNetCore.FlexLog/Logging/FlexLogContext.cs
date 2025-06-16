@@ -15,6 +15,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
 
         public IDictionary<string, string?> Headers { get; set; }
 
+        public string RequestLine { get; set; }
         public string? RequestBodyContentType { get; set; }
         public byte[]? RequestBodyRaw { get; set; }
         public string? RequestBody { get; set; }
@@ -33,6 +34,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
             Timestamp = DateTime.UtcNow;
             Claims = new Dictionary<string, string?>();
             Headers = new Dictionary<string, string?>();
+            RequestLine = string.Empty;
             LogEntries = new List<FlexLogEntry>();
         }
     }

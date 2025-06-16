@@ -130,6 +130,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
                 AddClaimsToLogContext(context, logContext);
                 AddHeadersToLogContext(context, logContext);
+                AddRequestLineToLogContext(context, logContext);
 
                 await AddRequestBodyToLogContext(context, logContext);
 
@@ -230,6 +231,11 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                     logContext.Headers.Add(header.Key, header.Value);
                 }
             }
+        }
+
+        private void AddRequestLineToLogContext(HttpContext context, FlexLogContext logContext)
+        {
+            logContext.RequestLine = $"{context.Request.Method} {context.Request.Path}";
         }
 
         private async Task AddRequestBodyToLogContext(HttpContext context, FlexLogContext logContext)
