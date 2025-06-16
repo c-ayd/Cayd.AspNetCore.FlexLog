@@ -234,7 +234,11 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
         private async Task AddRequestBodyToLogContext(HttpContext context, FlexLogContext logContext)
         {
-            if (!_requestBodyOptionEnabled || !IsContentTypeJson(context.Request.ContentType))
+            if (!_requestBodyOptionEnabled)
+                return;
+
+            logContext.RequestBodyContentType = context.Request.ContentType;
+            if (!IsContentTypeJson(context.Request.ContentType))
                 return;
 
             context.Request.EnableBuffering();
@@ -271,6 +275,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
             finally
             {
+                logContext.ResponseBodyContentType = context.Response.ContentType;
+
                 context.Response.Body = originalStream;
 
                 if (IsContentTypeJson(context.Response.ContentType))
