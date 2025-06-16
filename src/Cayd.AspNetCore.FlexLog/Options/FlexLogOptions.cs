@@ -36,7 +36,7 @@ namespace Cayd.AspNetCore.FlexLog.Options
             public class RequestBodyOption
             {
                 public bool? Enabled { get; set; }
-                public long? RequestBodySizeLimitInBytes { get; set; }
+                public long? BodySizeLimitInBytes { get; set; }
                 public List<string>? RedactedKeys { get; set; }
             }
 

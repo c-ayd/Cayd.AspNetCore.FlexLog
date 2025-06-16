@@ -92,7 +92,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             _requestBodyOptionEnabled = loggingOptions.Value.LogDetails?.RequestBody?.Enabled ?? true;
             if (_requestBodyOptionEnabled)
             {
-                _requestBodySizeLimit = loggingOptions.Value.LogDetails?.RequestBody?.RequestBodySizeLimitInBytes ?? _defaultRequestBodySizeLimit;
+                _requestBodySizeLimit = loggingOptions.Value.LogDetails?.RequestBody?.BodySizeLimitInBytes ?? _defaultRequestBodySizeLimit;
                 _redactedKeysFromRequestBody = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.RequestBody.RedactedKeys, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
