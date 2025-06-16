@@ -23,5 +23,10 @@ namespace Cayd.AspNetCore.FlexLog.Services
 
             _sinks = new List<IFlexLogSink>(sinks);
         }
+
+        public void AddLogContextToChannel(FlexLogContext logContext)
+        {
+            Logs.Writer.TryWrite(logContext);
+        }
     }
 }
