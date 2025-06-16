@@ -8,8 +8,7 @@ namespace Cayd.AspNetCore.FlexLog.Options
 
         public int? BufferLimit { get; set; }
         public int? TimerInSeconds { get; set; }
-        public string? CorrelationIdHeaderKey { get; set; }
-        public long? RequestBodySizeLimitInBytes { get; set; }
+        public List<string>? IgnoredRoutes { get; set; }
         public LogDetailOption? LogDetails { get; set; }
 
         public class LogDetailOption
@@ -29,6 +28,7 @@ namespace Cayd.AspNetCore.FlexLog.Options
             public class HeaderOption
             {
                 public bool? Enabled { get; set; }
+                public string? CorrelationIdKey { get; set; }
                 public List<string>? IncludedKeys { get; set; }
                 public List<string>? IgnoredKeys { get; set; }
             }
@@ -36,6 +36,7 @@ namespace Cayd.AspNetCore.FlexLog.Options
             public class RequestBodyOption
             {
                 public bool? Enabled { get; set; }
+                public long? RequestBodySizeLimitInBytes { get; set; }
                 public List<string>? RedactedKeys { get; set; }
             }
 
