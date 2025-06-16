@@ -5,7 +5,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
 {
     public class FlexLogContext
     {
-        public string CorrelationId { get; set; }
+        public string Id { get; set; }
         public string? TraceId { get; set; }
 
         public DateTime Timestamp { get; set; }
@@ -29,7 +29,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
 
         public FlexLogContext()
         {
-            CorrelationId = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             Timestamp = DateTime.UtcNow;
             Claims = new Dictionary<string, string?>();
             Headers = new Dictionary<string, string?>();
