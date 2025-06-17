@@ -6,6 +6,8 @@ namespace Cayd.AspNetCore.FlexLog.Sinks
 {
     public interface IFlexLogSink
     {
+        Task InitializeAsync();
         Task FlushAsync(IReadOnlyCollection<FlexLogContext> buffer);
+        Task DisposeAsync();
     }
 }

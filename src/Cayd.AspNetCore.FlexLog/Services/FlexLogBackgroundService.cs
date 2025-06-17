@@ -50,6 +50,36 @@ namespace Cayd.AspNetCore.FlexLog.Services
             _buffer = new List<FlexLogContext>(_bufferLimit);
         }
 
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            foreach (var sink in _logChannel.Sinks)
+            {
+                await sink.InitializeAsync();
+            }
+
+            foreach (var fallbackSink in _logChannel.FallbackSinks)
+            {
+                await fallbackSink.InitializeAsync();
+            }
+
+            await base.StartAsync(cancellationToken);
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            foreach (var sink in _logChannel.Sinks)
+            {
+                await sink.DisposeAsync();
+            }
+
+            foreach (var fallbackSink in _logChannel.FallbackSinks)
+            {
+                await fallbackSink.DisposeAsync();
+            }
+
+            await base.StopAsync(cancellationToken);
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
