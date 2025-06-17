@@ -6,10 +6,17 @@ namespace Cayd.AspNetCore.FlexLog.Options
     {
         public static readonly string OptionKey = "FlexLog";
 
+        public ChannelOption? Channel { get; set; }
         public int? BufferLimit { get; set; }
         public int? TimerInSeconds { get; set; }
         public List<string>? IgnoredRoutes { get; set; }
         public LogDetailOption? LogDetails { get; set; }
+
+        public class ChannelOption
+        {
+            public string? Strategy { get; set; }
+            public int? Capacity { get; set; }
+        }
 
         public class LogDetailOption
         {

@@ -30,11 +30,12 @@ namespace Cayd.AspNetCore.FlexLog.Extensions
             configure(config);
 
             services.Configure<FlexLogOptions>(configuration.GetSection(FlexLogOptions.OptionKey));
+            var loggingOptions = configuration.GetSection(FlexLogOptions.OptionKey).Get<FlexLogOptions>();
 
             services.AddScoped<FlexLogContext>();
             services.AddScoped(typeof(IFlexLogger<>), typeof(FlexLogger<>));
 
-            services.AddSingleton(new FlexLogChannel(config.GetSinks(), config.GetFallbackSinks()));
+            services.AddSingleton(new FlexLogChannel(loggingOptions, config.GetSinks(), config.GetFallbackSinks()));
             services.AddHostedService<FlexLogBackgroundService>();
         }
     }
