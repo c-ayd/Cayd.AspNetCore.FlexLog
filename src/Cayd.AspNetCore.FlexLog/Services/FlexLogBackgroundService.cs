@@ -1,14 +1,16 @@
 ﻿using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Options;
+using Cayd.AspNetCore.FlexLog.Sinks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cayd.AspNetCore.FlexLog.Services
 {
@@ -18,6 +20,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
         private static readonly string _redactedText = "REDACTED";
 
         private readonly FlexLogChannel _logChannel;
+        private readonly ILogger<FlexLogBackgroundService> _logger;
 
         private readonly int _bufferLimit;
         private readonly int _timer;
@@ -26,9 +29,12 @@ namespace Cayd.AspNetCore.FlexLog.Services
 
         private List<FlexLogContext> _buffer;
 
-        public FlexLogBackgroundService(FlexLogChannel logChannel, IOptions<FlexLogOptions> loggingOptions)
+        public FlexLogBackgroundService(FlexLogChannel logChannel,
+            ILogger<FlexLogBackgroundService> logger,
+            IOptions<FlexLogOptions> loggingOptions)
         {
             _logChannel = logChannel;
+            _logger = logger;
 
             _bufferLimit = loggingOptions.Value.BufferLimit ?? 1000;
             _timer = (loggingOptions.Value.TimerInSeconds ?? 5) * 1000;
@@ -109,9 +115,43 @@ namespace Cayd.AspNetCore.FlexLog.Services
                 }
             }
 
-            var sinks = _logChannel.Sinks.Select(s => s.FlushAsync(_buffer));
-            await Task.WhenAll(sinks);
+            var isSuccessful = await RunSinkTasks(_logChannel.Sinks);
+            if (!isSuccessful)
+            {
+                await RunSinkTasks(_logChannel.FallbackSinks);
+            }
+
             _buffer.Clear();
+        }
+
+        private async Task<bool> RunSinkTasks(IReadOnlyList<IFlexLogSink> sinks)
+        {
+            var tasks = sinks
+                .Select(s => new
+                {
+                    s.GetType().Name,
+                    Task = s.FlushAsync(_buffer)
+                })
+                .ToList();
+
+            try
+            {
+                await Task.WhenAll(tasks.Select(t => t.Task));
+                return true;
+            }
+            catch
+            {
+                var faultedTasks = tasks
+                    .Where(t => t.Task.IsFaulted)
+                    .ToList();
+
+                foreach (var faultedTask in faultedTasks)
+                {
+                    _logger.LogError(faultedTask.Task.Exception?.InnerException, $"{faultedTask.Name} threw an exception: " + faultedTask.Task.Exception?.InnerException?.Message);
+                }
+
+                return faultedTasks.Count == tasks.Count;
+            }
         }
 
         private async Task<string?> ParseJson(byte[] rawData, HashSet<string> redactedKeys)

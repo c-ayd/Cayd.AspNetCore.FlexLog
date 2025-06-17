@@ -59,8 +59,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         {
             _next = next;
 
-            _ignoredRoutes = loggingOptions.Value.IgnoredRoutes != null ? 
-                loggingOptions.Value.IgnoredRoutes : 
+            _ignoredRoutes = loggingOptions.Value.IgnoredRoutes != null ?
+                loggingOptions.Value.IgnoredRoutes :
                 new List<string>();
 
             _claimOptionEnabled = loggingOptions.Value.LogDetails?.Claims?.Enabled ?? true;

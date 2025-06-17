@@ -12,7 +12,10 @@ namespace Cayd.AspNetCore.FlexLog.Services
         private readonly List<IFlexLogSink> _sinks;
         public IReadOnlyList<IFlexLogSink> Sinks => _sinks;
 
-        public FlexLogChannel(ICollection<IFlexLogSink> sinks)
+        private readonly List<IFlexLogSink> _fallbackSinks;
+        public IReadOnlyList<IFlexLogSink> FallbackSinks => _fallbackSinks;
+
+        public FlexLogChannel(ICollection<IFlexLogSink> sinks, ICollection<IFlexLogSink> fallbackSinks)
         {
             Logs = Channel.CreateUnbounded<FlexLogContext>(new UnboundedChannelOptions()
             {
@@ -22,6 +25,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
             });
 
             _sinks = new List<IFlexLogSink>(sinks);
+            _fallbackSinks = new List<IFlexLogSink>(fallbackSinks);
         }
 
         public void AddLogContextToChannel(FlexLogContext logContext)
