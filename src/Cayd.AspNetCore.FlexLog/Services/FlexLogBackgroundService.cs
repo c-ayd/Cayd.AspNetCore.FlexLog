@@ -19,6 +19,8 @@ namespace Cayd.AspNetCore.FlexLog.Services
         private static readonly string _invalidJsonText = "INVALID JSON";
         private static readonly string _redactedText = "REDACTED";
 
+        private static readonly int _defaultBufferLimit = 1000;
+
         private readonly FlexLogChannel _logChannel;
         private readonly ILogger<FlexLogBackgroundService> _logger;
 
@@ -36,7 +38,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
             _logChannel = logChannel;
             _logger = logger;
 
-            _bufferLimit = loggingOptions.Value.BufferLimit ?? 1000;
+            _bufferLimit = loggingOptions.Value.BufferLimit ?? _defaultBufferLimit;
             _timer = (loggingOptions.Value.TimerInSeconds ?? 5) * 1000;
 
             _redactedKeysFromRequest = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
