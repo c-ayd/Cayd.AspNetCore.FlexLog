@@ -5,22 +5,22 @@ namespace Cayd.AspNetCore.FlexLog.Extensions
 {
     public class FlexLogConfig
     {
-        private List<IFlexLogSink> _sinks = new List<IFlexLogSink>();
-        private List<IFlexLogSink> _fallbackSinks = new List<IFlexLogSink>();
+        private List<FlexLogSink> _sinks = new List<FlexLogSink>();
+        private List<FlexLogSink> _fallbackSinks = new List<FlexLogSink>();
 
-        public FlexLogConfig AddSink(IFlexLogSink sink)
+        public FlexLogConfig AddSink(FlexLogSink sink)
         {
             _sinks.Add(sink);
             return this;
         }
 
-        public FlexLogConfig AddFallbackSink(IFlexLogSink fallbackSink)
+        public FlexLogConfig AddFallbackSink(FlexLogSink fallbackSink)
         {
             _fallbackSinks.Add(fallbackSink);
             return this;
         }
 
-        public List<IFlexLogSink> GetSinks() => _sinks;
-        public List<IFlexLogSink> GetFallbackSinks() => _fallbackSinks;
+        public List<FlexLogSink> GetSinks() => _sinks;
+        public List<FlexLogSink> GetFallbackSinks() => _fallbackSinks;
     }
 }

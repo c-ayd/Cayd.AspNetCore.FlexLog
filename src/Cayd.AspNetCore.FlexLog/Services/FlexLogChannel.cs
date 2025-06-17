@@ -17,13 +17,13 @@ namespace Cayd.AspNetCore.FlexLog.Services
 
         public Channel<FlexLogContext> Logs { get; private set; }
 
-        private readonly List<IFlexLogSink> _sinks;
-        public IReadOnlyList<IFlexLogSink> Sinks => _sinks;
+        private readonly List<FlexLogSink> _sinks;
+        public IReadOnlyList<FlexLogSink> Sinks => _sinks;
 
-        private readonly List<IFlexLogSink> _fallbackSinks;
-        public IReadOnlyList<IFlexLogSink> FallbackSinks => _fallbackSinks;
+        private readonly List<FlexLogSink> _fallbackSinks;
+        public IReadOnlyList<FlexLogSink> FallbackSinks => _fallbackSinks;
 
-        public FlexLogChannel(FlexLogOptions? loggingOptions, ICollection<IFlexLogSink> sinks, ICollection<IFlexLogSink> fallbackSinks)
+        public FlexLogChannel(FlexLogOptions? loggingOptions, ICollection<FlexLogSink> sinks, ICollection<FlexLogSink> fallbackSinks)
         {
             if (loggingOptions?.Channel?.Strategy == _dropNewestStrategy)
             {
@@ -68,8 +68,8 @@ namespace Cayd.AspNetCore.FlexLog.Services
                 });
             }
 
-            _sinks = new List<IFlexLogSink>(sinks);
-            _fallbackSinks = new List<IFlexLogSink>(fallbackSinks);
+            _sinks = new List<FlexLogSink>(sinks);
+            _fallbackSinks = new List<FlexLogSink>(fallbackSinks);
         }
 
         public void AddLogContextToChannel(FlexLogContext logContext)

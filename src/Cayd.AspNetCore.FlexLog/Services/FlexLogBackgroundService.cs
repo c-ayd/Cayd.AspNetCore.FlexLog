@@ -156,7 +156,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
             _buffer.Clear();
         }
 
-        private async Task<bool> RunSinkTasks(IReadOnlyList<IFlexLogSink> sinks)
+        private async Task<bool> RunSinkTasks(IReadOnlyList<FlexLogSink> sinks)
         {
             var tasks = sinks
                 .Select(s => new
