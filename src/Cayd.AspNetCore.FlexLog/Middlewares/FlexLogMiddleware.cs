@@ -330,6 +330,11 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 logContext.ResponseBodyContentType = context.Response.ContentType?.Split(';', 2, StringSplitOptions.TrimEntries)[0];
 
+                if (logContext.ResponseStatusCode == null)
+                {
+                    logContext.ResponseStatusCode = context.Response.StatusCode;
+                }
+
                 context.Response.Body = originalStream;
 
                 if (IsContentTypeJson(logContext.ResponseBodyContentType))
@@ -356,6 +361,9 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
         private void AddExceptionToLogContext(HttpContext context, FlexLogContext logContext, Exception exception)
         {
+            logContext.ResponseStatusCode = context.Response.StatusCode >= 200 && context.Response.StatusCode < 300 ?
+                StatusCodes.Status500InternalServerError : context.Response.StatusCode;
+
             var flexLogger = context.RequestServices.GetRequiredService<IFlexLogger<FlexLogMiddleware>>();
             flexLogger.Log(ELogLevel.Error, exception.Message, exception);
         }

@@ -25,6 +25,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         public bool? IsRequestBodyTooLarge { get; set; }
 
         public string? ResponseBodyContentType { get; set; }
+        public int? ResponseStatusCode { get; set; }
         public byte[]? ResponseBodyRaw { get; set; }
         public string? ResponseBody { get; set; }
 

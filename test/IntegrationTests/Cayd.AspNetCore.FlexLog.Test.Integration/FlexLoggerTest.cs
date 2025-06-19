@@ -5,6 +5,7 @@ using Cayd.AspNetCore.FlexLog.Sinks;
 using Cayd.AspNetCore.FlexLog.Test.Integration.Sinks;
 using Cayd.AspNetCore.FlexLog.Test.Integration.Utilities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -185,6 +186,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
                     });
                     Assert.NotNull(response);
                     Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
                     Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
                     Assert.Equal(456, response.Value.RootElement.GetInt64());
                     if (response.Nested.Secret.RootElement.ValueKind == JsonValueKind.Number)
@@ -224,6 +226,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
                     });
                     Assert.NotNull(response);
                     Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
                     Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
                     Assert.Equal(456, response.Value.RootElement.GetInt64());
                     if (response.Nested.Secret.RootElement.ValueKind == JsonValueKind.Number)
@@ -253,6 +256,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Null(buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
@@ -284,6 +288,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
                     });
                     Assert.NotNull(response);
                     Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
                     Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
                     Assert.Equal(456, response.Value.RootElement.GetInt64());
                     Assert.Equal(JsonValueKind.Number, response.Nested.Secret.RootElement.ValueKind);
@@ -359,6 +364,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Null(buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
@@ -392,6 +398,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Equal("text/plain", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
@@ -463,6 +470,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status500InternalServerError, buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
@@ -490,6 +498,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status500InternalServerError, buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
@@ -511,6 +520,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status500InternalServerError, buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
@@ -538,6 +548,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                     Assert.Null(buffer[0].ResponseBody);
                     Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status500InternalServerError, buffer[0].ResponseStatusCode);
                     Assert.Null(buffer[0].ResponseBodyRaw);
                     Assert.Null(buffer[0].ResponseBody);
                     break;
