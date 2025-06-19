@@ -12,7 +12,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cayd.AspNetCore.FlexLog", "src\Cayd.AspNetCore.FlexLog\Cayd.AspNetCore.FlexLog.csproj", "{18177A04-0300-4450-A708-4231EFB86EF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cayd.AspNetCore.FlexLog", "src\Cayd.AspNetCore.FlexLog\Cayd.AspNetCore.FlexLog.csproj", "{18177A04-0300-4450-A708-4231EFB86EF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0A5F6655-6239-43F4-9E12-97E96A2FB0EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{7FC95E04-EF4C-4CBC-A4A1-2BD368E050DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cayd.AspNetCore.FlexLog.Test.Integration", "test\IntegrationTests\Cayd.AspNetCore.FlexLog.Test.Integration\Cayd.AspNetCore.FlexLog.Test.Integration.csproj", "{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,12 +30,18 @@ Global
 		{18177A04-0300-4450-A708-4231EFB86EF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18177A04-0300-4450-A708-4231EFB86EF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18177A04-0300-4450-A708-4231EFB86EF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{18177A04-0300-4450-A708-4231EFB86EF3} = {1E005ECE-55C3-49FE-88CD-F966860D147A}
+		{7FC95E04-EF4C-4CBC-A4A1-2BD368E050DD} = {0A5F6655-6239-43F4-9E12-97E96A2FB0EC}
+		{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C} = {7FC95E04-EF4C-4CBC-A4A1-2BD368E050DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37C64471-91D0-4A1A-950B-5988788F3EF4}
