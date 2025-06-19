@@ -182,7 +182,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
                     _logger.LogError(faultedTask.Task.Exception?.InnerException, $"{faultedTask.Name} threw an exception: " + faultedTask.Task.Exception?.InnerException?.Message);
                 }
 
-                return faultedTasks.Count == tasks.Count;
+                return tasks.Count > faultedTasks.Count;
             }
         }
 
