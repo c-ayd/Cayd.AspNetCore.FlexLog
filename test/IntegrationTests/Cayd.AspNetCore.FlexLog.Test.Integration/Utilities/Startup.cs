@@ -1,4 +1,4 @@
-﻿using Cayd.AspNetCore.FlexLog.Extensions;
+﻿using Cayd.AspNetCore.FlexLog.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

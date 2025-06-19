@@ -9,9 +9,9 @@ using System;
 using Microsoft.AspNetCore.Builder;
 #endif
 
-namespace Cayd.AspNetCore.FlexLog.Extensions
+namespace Cayd.AspNetCore.FlexLog.DependencyInjection
 {
-    public static partial class FlexLogExtensions
+    public static partial class FlexLogDependencyInjection
     {
 #if NET6_0_OR_GREATER
         public static void AddFlexLog(this WebApplicationBuilder builder, Action<FlexLogConfig> configure)

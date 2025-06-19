@@ -1,7 +1,7 @@
 ﻿using Cayd.AspNetCore.FlexLog.Sinks;
 using System.Collections.Generic;
 
-namespace Cayd.AspNetCore.FlexLog.Extensions
+namespace Cayd.AspNetCore.FlexLog.DependencyInjection
 {
     public class FlexLogConfig
     {

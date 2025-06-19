@@ -1,9 +1,9 @@
 ﻿using Cayd.AspNetCore.FlexLog.Middlewares;
 using Microsoft.AspNetCore.Builder;
 
-namespace Cayd.AspNetCore.FlexLog.Extensions
+namespace Cayd.AspNetCore.FlexLog.DependencyInjection
 {
-    public static partial class FlexLogExtensions
+    public static partial class FlexLogDependencyInjection
     {
         public static void UseFlexLog(this IApplicationBuilder app)
         {

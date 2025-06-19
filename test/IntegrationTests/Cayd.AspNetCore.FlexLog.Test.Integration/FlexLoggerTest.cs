@@ -1,5 +1,5 @@
 ﻿using Cayd.AspNetCore.FlexLog.Enums;
-using Cayd.AspNetCore.FlexLog.Extensions;
+using Cayd.AspNetCore.FlexLog.DependencyInjection;
 using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Sinks;
 using Cayd.AspNetCore.FlexLog.Test.Integration.Sinks;
