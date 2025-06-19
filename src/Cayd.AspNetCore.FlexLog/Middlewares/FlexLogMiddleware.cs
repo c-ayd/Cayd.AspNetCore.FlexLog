@@ -290,8 +290,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             if (!_requestBodyOptionEnabled || IsRouteIgnored(context, ignoredRoutes))
                 return;
 
-            logContext.RequestBodyContentType = context.Request.ContentType;
-            if (!IsContentTypeJson(context.Request.ContentType))
+            logContext.RequestBodyContentType = context.Request.ContentType?.Split(';', 2, StringSplitOptions.TrimEntries)[0];
+            if (!IsContentTypeJson(logContext.RequestBodyContentType))
                 return;
 
             context.Request.EnableBuffering();
@@ -328,11 +328,11 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
             finally
             {
-                logContext.ResponseBodyContentType = context.Response.ContentType;
+                logContext.ResponseBodyContentType = context.Response.ContentType?.Split(';', 2, StringSplitOptions.TrimEntries)[0];
 
                 context.Response.Body = originalStream;
 
-                if (IsContentTypeJson(context.Response.ContentType))
+                if (IsContentTypeJson(logContext.ResponseBodyContentType))
                 {
                     memoryStream.Position = 0;
                     logContext.ResponseBodyRaw = memoryStream.ToArray();
@@ -350,9 +350,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             if (contentType == null)
                 return false;
 
-            var mediaType = contentType.Split(';', 2, StringSplitOptions.TrimEntries)[0];
-            return mediaType.Equals(MediaTypeNames.Application.Json, StringComparison.OrdinalIgnoreCase) ||
-                mediaType.EndsWith("+json", StringComparison.OrdinalIgnoreCase);
+            return contentType.Equals(MediaTypeNames.Application.Json, StringComparison.OrdinalIgnoreCase) ||
+                contentType.EndsWith("+json", StringComparison.OrdinalIgnoreCase);
         }
 
         private void AddExceptionToLogContext(HttpContext context, FlexLogContext logContext, Exception exception)
