@@ -18,7 +18,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0A5F6655-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{7FC95E04-EF4C-4CBC-A4A1-2BD368E050DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cayd.AspNetCore.FlexLog.Test.Integration", "test\IntegrationTests\Cayd.AspNetCore.FlexLog.Test.Integration\Cayd.AspNetCore.FlexLog.Test.Integration.csproj", "{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cayd.AspNetCore.FlexLog.Test.Integration", "test\IntegrationTests\Cayd.AspNetCore.FlexLog.Test.Integration\Cayd.AspNetCore.FlexLog.Test.Integration.csproj", "{D77D5CF0-C3BC-48B5-AB3B-B1880FF5931C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{59D67E50-09E2-4DEA-B0EC-4526C1E4E4DE}"
+	ProjectSection(SolutionItems) = preProject
+		assets\nuget-logo.png = assets\nuget-logo.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
