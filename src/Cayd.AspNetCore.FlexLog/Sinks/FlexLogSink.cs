@@ -8,6 +8,6 @@ namespace Cayd.AspNetCore.FlexLog.Sinks
     {
         public virtual Task InitializeAsync() => Task.CompletedTask;
         public virtual Task DisposeAsync() => Task.CompletedTask;
-        public abstract Task FlushAsync(IReadOnlyCollection<FlexLogContext> buffer);
+        public abstract Task FlushAsync(IReadOnlyList<FlexLogContext> buffer);
     }
 }
