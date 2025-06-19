@@ -15,6 +15,7 @@
     <PackageTags>cayd;aspnetcore;flexlog;log;logging;easy;flexible;detailed-logging;sink</PackageTags>
     <PackageReleaseNotes>First release</PackageReleaseNotes>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog/wiki</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
