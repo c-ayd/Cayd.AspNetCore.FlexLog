@@ -159,6 +159,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             switch (appsettings)
             {
                 case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("1234-5678", buffer[0].Id);
+
                     Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
@@ -447,6 +449,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             switch (appsettings)
             {
                 case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("1234-5678", buffer[0].Id);
+
                     Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
@@ -598,6 +602,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             switch (appsettings)
             {
                 case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("1234-5678", buffer[0].Id);
+
                     Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
@@ -780,6 +786,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             switch (appsettings)
             {
                 case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("1234-5678", buffer[0].Id);
+
                     Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
@@ -961,6 +969,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             switch (appsettings)
             {
                 case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("1234-5678", buffer[0].Id);
+
                     Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
                     Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");

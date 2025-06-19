@@ -16,6 +16,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
         {
             context.Request.Headers["User-Agent"] = "TestAgent";
             context.Request.Headers["Connection"] = "TestConnection";
+            context.Request.Headers["Correlation-Id"] = "1234-5678";
 
             await _next(context);
         }
