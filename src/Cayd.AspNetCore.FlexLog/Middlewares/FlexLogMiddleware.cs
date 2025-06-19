@@ -221,13 +221,15 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 foreach (var type in _includedClaimTypes)
                 {
+                    _claimTypeAliases.TryGetValue(type, out var claimType);
+
                     var claim = context.User.Claims
-                        .Where(c => _claimTypeAliases.TryGetValue(type, out var claimType) ?
+                        .Where(c => claimType != null ?
                             string.Equals(claimType, c.Type, StringComparison.OrdinalIgnoreCase) :
                             string.Equals(type, c.Type, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
-                    logContext.Claims.Add(type, claim?.Value);
+                    logContext.Claims.Add(claimType ?? type, claim?.Value);
                 }
             }
             else
