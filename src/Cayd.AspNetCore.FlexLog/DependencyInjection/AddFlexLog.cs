@@ -14,11 +14,20 @@ namespace Cayd.AspNetCore.FlexLog.DependencyInjection
     public static partial class FlexLogDependencyInjection
     {
 #if NET6_0_OR_GREATER
+        /// <summary>
+        /// Registers all services of FlexLog.
+        /// </summary>
+        /// <param name="configure">Adds sinks and fallback sinks for FlexLog.</param>
         public static void AddFlexLog(this WebApplicationBuilder builder, Action<FlexLogConfig> configure)
         {
             RegisterFlexLog(builder.Services, builder.Configuration, configure);
         }
 #endif
+        /// <summary>
+        /// Registers all services of FlexLog.
+        /// </summary>
+        /// <param name="configuration">Application configuration properties.</param>
+        /// <param name="configure">Adds sinks and fallback sinks for FlexLog.</param>
         public static void AddFlexLog(this IServiceCollection services, IConfiguration configuration, Action<FlexLogConfig> configure)
         {
             RegisterFlexLog(services, configuration, configure);

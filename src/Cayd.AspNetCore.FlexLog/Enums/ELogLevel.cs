@@ -1,5 +1,10 @@
-﻿namespace Cayd.AspNetCore.FlexLog.Enums
+﻿using Cayd.AspNetCore.FlexLog.Logging;
+
+namespace Cayd.AspNetCore.FlexLog.Enums
 {
+    /// <summary>
+    /// Log levels of FlexLog for <see cref="FlexLogEntry"/>.
+    /// </summary>
     public enum ELogLevel
     {
         /// <summary>
