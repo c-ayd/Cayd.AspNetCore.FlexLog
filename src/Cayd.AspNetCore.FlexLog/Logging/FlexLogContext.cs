@@ -28,7 +28,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         public byte[]? ResponseBodyRaw { get; set; }
         public string? ResponseBody { get; set; }
 
-        public ICollection<FlexLogEntry> LogEntries { get; set; }
+        public IList<FlexLogEntry> LogEntries { get; set; }
 
         public FlexLogContext()
         {
