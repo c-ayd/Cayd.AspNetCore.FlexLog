@@ -737,5 +737,362 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Dispose(server, client);
 #endif
         }
+
+        [Theory]
+        [InlineData(EAppsettingsConfig.AllExtra)]
+        [InlineData(EAppsettingsConfig.All)]
+        [InlineData(EAppsettingsConfig.Minimum)]
+        [InlineData(EAppsettingsConfig.None)]
+        public async Task Endpoint1_WhenApplicationShutsDown_ShouldFlushSink(EAppsettingsConfig appsettings)
+        {
+            // Arrange
+            var sink = new TestSink();
+#if NET6_0_OR_GREATER
+            var (host, client) = await CreateHost(appsettings, sink);
+#else
+            var (server, client) = CreateServer(appsettings, sink);
+#endif
+
+            // Act
+            var result = (await client.PostAsJsonAsync("/", CreateRequestBody())).IsSuccessStatusCode;
+
+#if NET6_0_OR_GREATER
+            await Dispose(host, client);
+#else
+            Dispose(server, client);
+#endif
+
+            // Assert
+            Assert.True(result, "Something happened while executing the endpoint 1.");
+
+            var buffer = await sink.GetBuffer();
+            Assert.Equal(1, buffer.Count);
+            Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "Elapsed time is zero.");
+            Assert.True(buffer[0].LogEntries.Count > 0, "There is no log entry");
+            Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[0].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[0].Category);
+            Assert.Equal("test info 1", buffer[0].LogEntries[0].Message);
+            Assert.Null(buffer[0].LogEntries[0].Exception);
+            Assert.NotNull(buffer[0].LogEntries[0].Metadata);
+
+            RequestModel? request;
+            ResponseModel? response;
+            switch (appsettings)
+            {
+                case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue("CustomClaim", out var _), "CustomClaim claim type is included in the claims.");
+
+                    Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
+                    Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "Connection header is included in the header.");
+
+                    request = JsonSerializer.Deserialize<RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(request);
+                    Assert.Equal("test@test.com", request.Email);
+                    Assert.Equal("REDACTED", request.Password);
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Equal("application/json", buffer[0].RequestBodyContentType);
+                    Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                    Assert.True(buffer[0].RequestBodySizeInBytes > 0, "Request body size is zero");
+                    Assert.False(buffer[0].IsRequestBodyTooLarge, "Request body size is too large.");
+
+                    response = JsonSerializer.Deserialize<ResponseModel>(buffer[0].ResponseBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(response);
+                    Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
+                    Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
+                    Assert.Equal(456, response.Value.RootElement.GetInt64());
+                    if (response.Nested.Secret.RootElement.ValueKind == JsonValueKind.Number)
+                    {
+                        Assert.Equal(789, response.Nested.Secret.RootElement.GetInt64());
+                    }
+                    else
+                    {
+                        Assert.Equal("REDACTED", response.Nested.Secret.RootElement.GetString());
+                    }
+                    break;
+                case EAppsettingsConfig.All:
+                    Assert.Equal("TestName", buffer[0].Claims[ClaimTypes.Name]);
+                    Assert.Equal("CustomValue", buffer[0].Claims["CustomClaim"]);
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.NameIdentifier, out var _), "NameIdentifier claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
+
+                    Assert.False(buffer[0].Headers.TryGetValue("User-Agent", out var _), "User-Agent header is included in the header.");
+                    Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "Connection header is included in the header.");
+
+                    request = JsonSerializer.Deserialize<RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(request);
+                    Assert.Equal("test@test.com", request.Email);
+                    Assert.Equal("REDACTED", request.Password);
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Equal("application/json", buffer[0].RequestBodyContentType);
+                    Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                    Assert.True(buffer[0].RequestBodySizeInBytes > 0, "Request body size is zero");
+                    Assert.False(buffer[0].IsRequestBodyTooLarge, "Request body size is too large.");
+
+                    response = JsonSerializer.Deserialize<ResponseModel>(buffer[0].ResponseBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(response);
+                    Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
+                    Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
+                    Assert.Equal(456, response.Value.RootElement.GetInt64());
+                    if (response.Nested.Secret.RootElement.ValueKind == JsonValueKind.Number)
+                    {
+                        Assert.Equal(789, response.Nested.Secret.RootElement.GetInt64());
+                    }
+                    else
+                    {
+                        Assert.Equal("REDACTED", response.Nested.Secret.RootElement.GetString());
+                    }
+                    break;
+                case EAppsettingsConfig.Minimum:
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.NameIdentifier, out var _), "NameIdentifier claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue("CustomClaim", out var _), "CustomClaim claim type is included in the claims.");
+
+                    Assert.False(buffer[0].Headers.TryGetValue("User-Agent", out var _), "User-Agent header is included in the header.");
+                    Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "Connection header is included in the header.");
+
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Null(buffer[0].RequestBodyContentType);
+                    Assert.Null(buffer[0].RequestBodyRaw);
+                    Assert.Null(buffer[0].RequestBody);
+                    Assert.Null(buffer[0].RequestBodySizeInBytes);
+                    Assert.Null(buffer[0].IsRequestBodyTooLarge);
+
+                    Assert.Null(buffer[0].ResponseBody);
+                    Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Null(buffer[0].ResponseStatusCode);
+                    Assert.Null(buffer[0].ResponseBodyRaw);
+                    Assert.Null(buffer[0].ResponseBody);
+                    break;
+                case EAppsettingsConfig.None:
+                default:
+                    Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
+                    Assert.Equal("test@test.com", buffer[0].Claims[ClaimTypes.Email]);
+                    Assert.Equal("TestName", buffer[0].Claims[ClaimTypes.Name]);
+                    Assert.Equal("CustomValue", buffer[0].Claims["CustomClaim"]);
+
+                    Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
+                    Assert.Equal("TestConnection", buffer[0].Headers["Connection"]);
+
+                    request = JsonSerializer.Deserialize<RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(request);
+                    Assert.Equal("test@test.com", request.Email);
+                    Assert.Equal("123456", request.Password);
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Equal("application/json", buffer[0].RequestBodyContentType);
+                    Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                    Assert.True(buffer[0].RequestBodySizeInBytes > 0, "Request body size is zero");
+
+                    response = JsonSerializer.Deserialize<ResponseModel>(buffer[0].ResponseBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(response);
+                    Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(StatusCodes.Status200OK, buffer[0].ResponseStatusCode);
+                    Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
+                    Assert.Equal(456, response.Value.RootElement.GetInt64());
+                    Assert.Equal(JsonValueKind.Number, response.Nested.Secret.RootElement.ValueKind);
+                    Assert.Equal(789, response.Nested.Secret.RootElement.GetInt64());
+                    break;
+            }
+        }
+
+        [Theory]
+        [InlineData(EAppsettingsConfig.AllExtra)]
+        [InlineData(EAppsettingsConfig.All)]
+        [InlineData(EAppsettingsConfig.Minimum)]
+        [InlineData(EAppsettingsConfig.None)]
+        public async Task Endpoint1_WhenApplicationShutsDownAndSinkIsFault_ShouldFlushFallbackSink(EAppsettingsConfig appsettings)
+        {
+            // Arrange
+            var faultySink = new TestFaultySink();
+            var fallbackSink = new TestFallbackSink();
+#if NET6_0_OR_GREATER
+            var (host, client) = await CreateHost(appsettings, faultySink, fallbackSink);
+#else
+            var (server, client) = CreateServer(appsettings, faultySink, fallbackSink);
+#endif
+
+            // Act
+            var result = (await client.PostAsJsonAsync("/", CreateRequestBody())).IsSuccessStatusCode;
+
+#if NET6_0_OR_GREATER
+            await Dispose(host, client);
+#else
+            Dispose(server, client);
+#endif
+
+            // Assert
+            Assert.True(result, "Something happened while executing the endpoint 1.");
+
+            var buffer = await fallbackSink.GetBuffer();
+            Assert.Equal(1, buffer.Count);
+            Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "Elapsed time is zero.");
+            Assert.True(buffer[0].LogEntries.Count > 0, "There is no log entry");
+            Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[0].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[0].Category);
+            Assert.Equal("test info 1", buffer[0].LogEntries[0].Message);
+            Assert.Null(buffer[0].LogEntries[0].Exception);
+            Assert.NotNull(buffer[0].LogEntries[0].Metadata);
+
+            RequestModel? request;
+            ResponseModel? response;
+            switch (appsettings)
+            {
+                case EAppsettingsConfig.AllExtra:
+                    Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue("CustomClaim", out var _), "CustomClaim claim type is included in the claims.");
+
+                    Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
+                    Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "Connection header is included in the header.");
+
+                    request = JsonSerializer.Deserialize<RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(request);
+                    Assert.Equal("test@test.com", request.Email);
+                    Assert.Equal("REDACTED", request.Password);
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Equal("application/json", buffer[0].RequestBodyContentType);
+                    Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                    Assert.True(buffer[0].RequestBodySizeInBytes > 0, "Request body size is zero");
+                    Assert.False(buffer[0].IsRequestBodyTooLarge, "Request body size is too large.");
+
+                    response = JsonSerializer.Deserialize<ResponseModel>(buffer[0].ResponseBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(response);
+                    Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
+                    Assert.Equal(456, response.Value.RootElement.GetInt64());
+                    if (response.Nested.Secret.RootElement.ValueKind == JsonValueKind.Number)
+                    {
+                        Assert.Equal(789, response.Nested.Secret.RootElement.GetInt64());
+                    }
+                    else
+                    {
+                        Assert.Equal("REDACTED", response.Nested.Secret.RootElement.GetString());
+                    }
+                    break;
+                case EAppsettingsConfig.All:
+                    Assert.Equal("TestName", buffer[0].Claims[ClaimTypes.Name]);
+                    Assert.Equal("CustomValue", buffer[0].Claims["CustomClaim"]);
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.NameIdentifier, out var _), "NameIdentifier claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
+
+                    Assert.False(buffer[0].Headers.TryGetValue("User-Agent", out var _), "User-Agent header is included in the header.");
+                    Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "Connection header is included in the header.");
+
+                    request = JsonSerializer.Deserialize<RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(request);
+                    Assert.Equal("test@test.com", request.Email);
+                    Assert.Equal("REDACTED", request.Password);
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Equal("application/json", buffer[0].RequestBodyContentType);
+                    Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                    Assert.True(buffer[0].RequestBodySizeInBytes > 0, "Request body size is zero");
+                    Assert.False(buffer[0].IsRequestBodyTooLarge, "Request body size is too large.");
+
+                    response = JsonSerializer.Deserialize<ResponseModel>(buffer[0].ResponseBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(response);
+                    Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
+                    Assert.Equal(456, response.Value.RootElement.GetInt64());
+                    if (response.Nested.Secret.RootElement.ValueKind == JsonValueKind.Number)
+                    {
+                        Assert.Equal(789, response.Nested.Secret.RootElement.GetInt64());
+                    }
+                    else
+                    {
+                        Assert.Equal("REDACTED", response.Nested.Secret.RootElement.GetString());
+                    }
+                    break;
+                case EAppsettingsConfig.Minimum:
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.NameIdentifier, out var _), "NameIdentifier claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Email, out var _), "Email claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.Name, out var _), "Name claim type is included in the claims.");
+                    Assert.False(buffer[0].Claims.TryGetValue("CustomClaim", out var _), "CustomClaim claim type is included in the claims.");
+
+                    Assert.False(buffer[0].Headers.TryGetValue("User-Agent", out var _), "User-Agent header is included in the header.");
+                    Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "Connection header is included in the header.");
+
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Null(buffer[0].RequestBodyContentType);
+                    Assert.Null(buffer[0].RequestBodyRaw);
+                    Assert.Null(buffer[0].RequestBody);
+                    Assert.Null(buffer[0].RequestBodySizeInBytes);
+                    Assert.Null(buffer[0].IsRequestBodyTooLarge);
+
+                    Assert.Null(buffer[0].ResponseBody);
+                    Assert.Null(buffer[0].ResponseBodyContentType);
+                    Assert.Null(buffer[0].ResponseBodyRaw);
+                    Assert.Null(buffer[0].ResponseBody);
+                    break;
+                case EAppsettingsConfig.None:
+                default:
+                    Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
+                    Assert.Equal("test@test.com", buffer[0].Claims[ClaimTypes.Email]);
+                    Assert.Equal("TestName", buffer[0].Claims[ClaimTypes.Name]);
+                    Assert.Equal("CustomValue", buffer[0].Claims["CustomClaim"]);
+
+                    Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
+                    Assert.Equal("TestConnection", buffer[0].Headers["Connection"]);
+
+                    request = JsonSerializer.Deserialize<RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(request);
+                    Assert.Equal("test@test.com", request.Email);
+                    Assert.Equal("123456", request.Password);
+                    Assert.Equal("POST /", buffer[0].RequestLine);
+                    Assert.Equal("application/json", buffer[0].RequestBodyContentType);
+                    Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                    Assert.True(buffer[0].RequestBodySizeInBytes > 0, "Request body size is zero");
+
+                    response = JsonSerializer.Deserialize<ResponseModel>(buffer[0].ResponseBody!, new JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    Assert.NotNull(response);
+                    Assert.Equal("application/json", buffer[0].ResponseBodyContentType);
+                    Assert.Equal(JsonValueKind.Number, response.Value.RootElement.ValueKind);
+                    Assert.Equal(456, response.Value.RootElement.GetInt64());
+                    Assert.Equal(JsonValueKind.Number, response.Nested.Secret.RootElement.ValueKind);
+                    Assert.Equal(789, response.Nested.Secret.RootElement.GetInt64());
+                    break;
+            }
+        }
     }
 }
