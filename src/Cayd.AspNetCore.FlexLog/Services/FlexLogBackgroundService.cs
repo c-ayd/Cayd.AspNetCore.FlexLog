@@ -107,7 +107,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
                         _buffer.Add(log);
                         if (_buffer.Count >= _bufferLimit)
                         {
-                            await FlushSinksAsync();
+                            await FlushBufferAsync();
                             break;
                         }
                     }
@@ -116,7 +116,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
                 {
                     if (_buffer.Count > 0)
                     {
-                        await FlushSinksAsync();
+                        await FlushBufferAsync();
                     }
                 }
             }
@@ -128,11 +128,11 @@ namespace Cayd.AspNetCore.FlexLog.Services
 
             if (_buffer.Count > 0)
             {
-                await FlushSinksAsync();
+                await FlushBufferAsync();
             }
         }
 
-        private async Task FlushSinksAsync()
+        private async Task FlushBufferAsync()
         {
             foreach (var logContext in _buffer)
             {
@@ -162,7 +162,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
                 .Select(s => new
                 {
                     s.GetType().Name,
-                    Task = s.FlushAsync(_buffer)
+                    Task = s.WriteBatchAsync(_buffer)
                 })
                 .ToList();
 
