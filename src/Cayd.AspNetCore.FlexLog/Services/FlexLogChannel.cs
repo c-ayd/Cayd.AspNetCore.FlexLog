@@ -23,9 +23,9 @@ namespace Cayd.AspNetCore.FlexLog.Services
 
         public FlexLogChannel(FlexLogOptions? loggingOptions, ICollection<FlexLogSink> sinks, ICollection<FlexLogSink> fallbackSinks)
         {
-            if (loggingOptions?.Channel?.Strategy == _dropWriteStrategy)
+            if (string.Equals(_dropWriteStrategy, loggingOptions?.Channel?.Strategy, System.StringComparison.OrdinalIgnoreCase))
             {
-                Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(loggingOptions.Channel?.Capacity ?? _defaultChannelCapacity)
+                Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(loggingOptions?.Channel?.Capacity ?? _defaultChannelCapacity)
                 {
                     AllowSynchronousContinuations = false,
                     Capacity = _defaultChannelCapacity,
