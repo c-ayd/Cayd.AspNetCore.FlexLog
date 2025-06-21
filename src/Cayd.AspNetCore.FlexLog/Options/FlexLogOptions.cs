@@ -38,9 +38,16 @@ namespace Cayd.AspNetCore.FlexLog.Options
             {
                 public bool? Enabled { get; set; }
                 public string? CorrelationIdKey { get; set; }
+                public LimitOption? Limit { get; set; }
                 public List<string>? IncludedKeys { get; set; }
                 public List<string>? IgnoredKeys { get; set; }
                 public List<string>? IgnoredRoutes { get; set; }
+
+                public class LimitOption
+                {
+                    public int? Length { get; set; }
+                    public string? Strategy { get; set; }
+                }
             }
 
             public class RequestBodyOption
@@ -61,7 +68,13 @@ namespace Cayd.AspNetCore.FlexLog.Options
             public class QueryStringOption
             {
                 public bool? Enabled { get; set; }
+                public LimitOption? Limit { get; set; }
                 public List<string>? IgnoredRoutes { get; set; }
+
+                public class LimitOption
+                {
+                    public int? Length { get; set; }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ using Cayd.AspNetCore.FlexLog.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,12 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 {
     public class FlexLogMiddleware
     {
+        private static readonly string _headerLimitDropStrategy = "Drop";
+        private static readonly string _headerLimitSliceStrategy = "Slice";
+        private static readonly string _headerLimitDropText = "TOO LARGE";
+
         private static readonly long _defaultRequestBodySizeLimit = 30720;      // 30 KB
+
         private static readonly Dictionary<string, string> _claimTypeAliases = typeof(ClaimTypes)
             .GetFields(BindingFlags.Static | BindingFlags.Public)
             .Where(f => f.FieldType == typeof(string))
@@ -38,6 +44,9 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
         private readonly bool _headerOptionEnabled;
         private readonly string? _correlationIdKey;
+        private readonly bool _headerLimitOptionEnabled;
+        private readonly int _headerLimitLength;
+        private readonly bool _headerLimitDrop;
         private readonly HashSet<string> _includedHeaderKeys;
         private readonly HashSet<string> _ignoredHeaderKeys;
         private readonly List<string> _ignoredRoutesForHeaders;
@@ -52,6 +61,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private readonly List<string> _ignoredRoutesForResponseBody;
 
         private readonly bool _queryStringOptionEnabled;
+        private readonly bool _queryStringLimitOptionEnabled;
+        private readonly int _queryStringLimitLength;
         private readonly List<string> _ignoredRoutesForQueryString;
 
         public FlexLogMiddleware(RequestDelegate next, IOptions<FlexLogOptions> loggingOptions)
@@ -95,10 +106,18 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _ignoredRoutesForHeaders = loggingOptions.Value.LogDetails?.Headers?.IgnoredRoutes != null ?
                     loggingOptions.Value.LogDetails.Headers.IgnoredRoutes :
                     new List<string>();
+
+                _headerLimitOptionEnabled = loggingOptions.Value.LogDetails?.Headers?.Limit != null;
+                if (_headerLimitOptionEnabled)
+                {
+                    _headerLimitLength = loggingOptions.Value.LogDetails?.Headers?.Limit?.Length ?? 512;
+                    _headerLimitDrop = string.Equals(_headerLimitDropStrategy, loggingOptions.Value.LogDetails?.Headers?.Limit?.Strategy, StringComparison.OrdinalIgnoreCase);
+                }
             }
             else
             {
                 _correlationIdKey = null;
+                _headerLimitOptionEnabled = false;
                 _includedHeaderKeys = new HashSet<string>();
                 _ignoredHeaderKeys = new HashSet<string>();
                 _ignoredRoutesForHeaders = new List<string>();
@@ -141,12 +160,19 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             _queryStringOptionEnabled = loggingOptions.Value.LogDetails?.QueryString?.Enabled ?? true;
             if (_queryStringOptionEnabled)
             {
+                _queryStringLimitOptionEnabled = loggingOptions.Value.LogDetails?.QueryString?.Limit != null;
+                if (_queryStringLimitOptionEnabled)
+                {
+                    _queryStringLimitLength = loggingOptions.Value.LogDetails?.QueryString?.Limit?.Length ?? 512;
+                }
+                
                 _ignoredRoutesForQueryString = loggingOptions.Value.LogDetails?.QueryString?.IgnoredRoutes != null ?
                     loggingOptions.Value.LogDetails.QueryString.IgnoredRoutes :
                     new List<string>();
             }
             else
             {
+                _queryStringLimitOptionEnabled = false;
                 _ignoredRoutesForQueryString = new List<string>();
             }
         }
@@ -255,20 +281,41 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 foreach (var headerKey in _includedHeaderKeys)
                 {
-                    logContext.Headers.Add(headerKey, context.Request.Headers[headerKey]);
+                    if (!context.Request.Headers.TryGetValue(headerKey, out var headerValue))
+                        continue;
+
+                    logContext.Headers.Add(headerKey, GetHeaderString(headerValue));
                 }
             }
             else
             {
-                foreach (var header in context.Request.Headers)
+                foreach (var kvHeader in context.Request.Headers)
                 {
-                    if (_ignoredHeaderKeys.Count > 0 &&
-                        _ignoredHeaderKeys.Any(t => string.Equals(t, header.Key, StringComparison.OrdinalIgnoreCase)))
+                    if (!context.Request.Headers.TryGetValue(kvHeader.Key, out var headerValue) ||
+                        (_ignoredHeaderKeys.Count > 0 && _ignoredHeaderKeys.Any(t => string.Equals(t, kvHeader.Key, StringComparison.OrdinalIgnoreCase))))
                         continue;
 
-                    logContext.Headers.Add(header.Key, header.Value);
+                    logContext.Headers.Add(kvHeader.Key, GetHeaderString(headerValue));
                 }
             }
+        }
+
+        private string GetHeaderString(StringValues headerValue)
+        {
+            var value = headerValue.ToString();
+            if (_headerLimitOptionEnabled && value.Length > _headerLimitLength)
+            {
+                if (_headerLimitDrop)
+                {
+                    value = _headerLimitDropText;
+                }
+                else
+                {
+                    value = value.Substring(0, _headerLimitLength);
+                }
+            }
+
+            return value;
         }
 
         private void AddRequestLineToLogContext(HttpContext context, FlexLogContext logContext)
@@ -281,7 +328,21 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             if (!_queryStringOptionEnabled || IsRouteIgnored(context, ignoredRoutes))
                 return;
 
-            logContext.QueryString = context.Request.QueryString.Value;
+            var value = context.Request.QueryString.Value;
+            if (value == null)
+                return;
+
+            if (_queryStringLimitOptionEnabled)
+            {
+                if (value.Length <= _queryStringLimitLength)
+                {
+                    logContext.QueryString = value;
+                }
+            }
+            else
+            {
+                logContext.QueryString = value;
+            }
         }
 
         private async Task AddRequestBodyToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)
