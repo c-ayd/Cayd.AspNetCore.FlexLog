@@ -1,25 +1,35 @@
-﻿#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
-using Cayd.AspNetCore.FlexLog.Logging;
+﻿using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Sinks;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cayd.AspNetCore.FlexLog.Test.Integration.Sinks
 {
     public class TestSink : FlexLogSink
     {
-        private TaskCompletionSource<IReadOnlyList<FlexLogContext>> _tcs = new TaskCompletionSource<IReadOnlyList<FlexLogContext>>();
-        public async Task<IReadOnlyList<FlexLogContext>> GetBuffer() => await _tcs.Task;
+        private SemaphoreSlim _readSemaphore = new SemaphoreSlim(0, 1);
+        private SemaphoreSlim _writeSemaphore = new SemaphoreSlim(1, 1);
+        private List<FlexLogContext> _buffer = new List<FlexLogContext>();
 
-        public TestSink()
+        public async Task<IReadOnlyList<FlexLogContext>> GetBuffer()
         {
-            _tcs = new TaskCompletionSource<IReadOnlyList<FlexLogContext>>();
+            await _readSemaphore.WaitAsync();
+
+            var buffer = new List<FlexLogContext>(_buffer);
+
+            _writeSemaphore.Release();
+
+            return _buffer;
         }
 
-        public override async Task FlushAsync(IReadOnlyList<FlexLogContext> buffer)
+        public override async Task WriteBatchAsync(IReadOnlyList<FlexLogContext> buffer)
         {
-            _tcs.SetResult(new List<FlexLogContext>(buffer));
+            await _writeSemaphore.WaitAsync();
+
+            _buffer = new List<FlexLogContext>(buffer);
+
+            _readSemaphore.Release();
         }
     }
 }

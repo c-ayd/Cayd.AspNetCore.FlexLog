@@ -14,6 +14,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
 
         public async Task InvokeAsync(HttpContext context)
         {
+            context.Request.Headers["Accept"] = "*/*";
             context.Request.Headers["User-Agent"] = "TestAgent";
             context.Request.Headers["Connection"] = "TestConnection";
             context.Request.Headers["Correlation-Id"] = "1234-5678";

@@ -21,16 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" Condition="'$(TargetFramework)' == 'net5.0'" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition="'$(TargetFramework)' == 'net6.0'" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
-    <None Update="Utilities\appsettings.None.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Utilities\appsettings.Minimum.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Utilities\appsettings.All.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Utilities\appsettings.AllExtra.json">
+    <None Update="Utilities\**\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
