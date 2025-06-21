@@ -9,8 +9,6 @@ namespace Cayd.AspNetCore.FlexLog.Services
     public class FlexLogChannel
     {
         private static readonly string _unboundedStrategy = "Unbounded";
-        private static readonly string _dropNewestStrategy = "DropNewest";
-        private static readonly string _dropOldestStrategy = "DropOldest";
         private static readonly string _dropWriteStrategy = "DropWrite";
 
         private static readonly int _defaultChannelCapacity = 10_000;
@@ -25,29 +23,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
 
         public FlexLogChannel(FlexLogOptions? loggingOptions, ICollection<FlexLogSink> sinks, ICollection<FlexLogSink> fallbackSinks)
         {
-            if (loggingOptions?.Channel?.Strategy == _dropNewestStrategy)
-            {
-                Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(loggingOptions.Channel?.Capacity ?? _defaultChannelCapacity)
-                {
-                    AllowSynchronousContinuations = false,
-                    Capacity = _defaultChannelCapacity,
-                    SingleReader = true,
-                    SingleWriter = false,
-                    FullMode = BoundedChannelFullMode.DropNewest
-                });
-            }
-            else if (loggingOptions?.Channel?.Strategy == _dropOldestStrategy)
-            {
-                Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(loggingOptions.Channel?.Capacity ?? _defaultChannelCapacity)
-                {
-                    AllowSynchronousContinuations = false,
-                    Capacity = _defaultChannelCapacity,
-                    SingleReader = true,
-                    SingleWriter = false,
-                    FullMode = BoundedChannelFullMode.DropOldest
-                });
-            }
-            else if (loggingOptions?.Channel?.Strategy == _dropWriteStrategy)
+            if (loggingOptions?.Channel?.Strategy == _dropWriteStrategy)
             {
                 Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(loggingOptions.Channel?.Capacity ?? _defaultChannelCapacity)
                 {
