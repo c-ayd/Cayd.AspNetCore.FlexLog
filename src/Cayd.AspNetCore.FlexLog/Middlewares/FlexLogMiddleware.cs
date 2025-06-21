@@ -170,7 +170,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
                 await AddRequestBodyToLogContext(context, logContext, _ignoredRoutesForRequestBody);
 
-                if (_requestBodyOptionEnabled && !IsRouteIgnored(context, _ignoredRoutesForResponseBody))
+                if (_responseBodyOptionEnabled && !IsRouteIgnored(context, _ignoredRoutesForResponseBody))
                 {
                     await AddResponseBodyToLogContext(context, logContext);
                 }
