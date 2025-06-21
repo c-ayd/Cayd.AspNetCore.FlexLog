@@ -1,4 +1,5 @@
-﻿using Cayd.AspNetCore.FlexLog.Logging;
+﻿using Cayd.AspNetCore.FlexLog.Exceptions;
+using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Options;
 using Cayd.AspNetCore.FlexLog.Services;
 using Microsoft.Extensions.Configuration;
@@ -38,14 +39,88 @@ namespace Cayd.AspNetCore.FlexLog.DependencyInjection
             var config = new FlexLogConfig();
             configure(config);
 
-            services.Configure<FlexLogOptions>(configuration.GetSection(FlexLogOptions.OptionKey));
             var loggingOptions = configuration.GetSection(FlexLogOptions.OptionKey).Get<FlexLogOptions>();
+            CheckRouteOptions(loggingOptions);
+
+            services.Configure<FlexLogOptions>(configuration.GetSection(FlexLogOptions.OptionKey));
 
             services.AddScoped<FlexLogContext>();
             services.AddScoped(typeof(IFlexLogger<>), typeof(FlexLogger<>));
 
             services.AddSingleton(new FlexLogChannel(loggingOptions, config.GetSinks(), config.GetFallbackSinks()));
             services.AddHostedService<FlexLogBackgroundService>();
+        }
+
+        private static void CheckRouteOptions(FlexLogOptions? options)
+        {
+            if (options == null)
+                return;
+
+            if (options.IgnoredRoutes != null)
+            {
+                foreach (var route in options.IgnoredRoutes)
+                {
+                    if (!route.StartsWith('/'))
+                    {
+                        throw new InvalidRouteFormatException("IgnoredRoutes", route);
+                    }
+                }
+            }
+
+            if (options.LogDetails?.Claims?.IgnoredRoutes != null)
+            {
+                foreach (var route in options.LogDetails.Claims.IgnoredRoutes)
+                {
+                    if (!route.StartsWith('/'))
+                    {
+                        throw new InvalidRouteFormatException("LogDetails:Claims:IgnoredRoutes", route);
+                    }
+                }
+            }
+
+            if (options.LogDetails?.Headers?.IgnoredRoutes != null)
+            {
+                foreach (var route in options.LogDetails.Headers.IgnoredRoutes)
+                {
+                    if (!route.StartsWith('/'))
+                    {
+                        throw new InvalidRouteFormatException("LogDetails:Headers:IgnoredRoutes", route);
+                    }
+                }
+            }
+
+            if (options.LogDetails?.RequestBody?.IgnoredRoutes != null)
+            {
+                foreach (var route in options.LogDetails.RequestBody.IgnoredRoutes)
+                {
+                    if (!route.StartsWith('/'))
+                    {
+                        throw new InvalidRouteFormatException("LogDetails:RequestBody:IgnoredRoutes", route);
+                    }
+                }
+            }
+
+            if (options.LogDetails?.ResponseBody?.IgnoredRoutes != null)
+            {
+                foreach (var route in options.LogDetails.ResponseBody.IgnoredRoutes)
+                {
+                    if (!route.StartsWith('/'))
+                    {
+                        throw new InvalidRouteFormatException("LogDetails:ResponseBody:IgnoredRoutes", route);
+                    }
+                }
+            }
+
+            if (options.LogDetails?.QueryString?.IgnoredRoutes != null)
+            {
+                foreach (var route in options.LogDetails.QueryString.IgnoredRoutes)
+                {
+                    if (!route.StartsWith('/'))
+                    {
+                        throw new InvalidRouteFormatException("LogDetails:QueryString:IgnoredRoutes", route);
+                    }
+                }
+            }
         }
     }
 }
