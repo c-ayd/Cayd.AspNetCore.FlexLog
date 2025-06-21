@@ -20,6 +20,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
         private static readonly string _redactedText = "REDACTED";
 
         private static readonly int _defaultBufferLimit = 1000;
+        private static readonly int _defaultTimerInSeconds = 5;
 
         private readonly FlexLogChannel _logChannel;
         private readonly ILogger<FlexLogBackgroundService> _logger;
@@ -39,7 +40,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
             _logger = logger;
 
             _bufferLimit = loggingOptions.Value.BufferLimit ?? _defaultBufferLimit;
-            _timer = (loggingOptions.Value.TimerInSeconds ?? 5) * 1000;
+            _timer = (loggingOptions.Value.TimerInSeconds ?? _defaultTimerInSeconds) * 1000;
 
             _redactedKeysFromRequest = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
                 new HashSet<string>(loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys!, StringComparer.OrdinalIgnoreCase) :
