@@ -1,5 +1,4 @@
-﻿using Cayd.AspNetCore.FlexLog.Enums;
-using Cayd.AspNetCore.FlexLog.Logging;
+﻿using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Options;
 using Cayd.AspNetCore.FlexLog.Services;
 using Microsoft.AspNetCore.Http;
@@ -365,7 +364,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 StatusCodes.Status500InternalServerError : context.Response.StatusCode;
 
             var flexLogger = context.RequestServices.GetRequiredService<IFlexLogger<FlexLogMiddleware>>();
-            flexLogger.Log(ELogLevel.Error, exception.Message, exception);
+            flexLogger.LogError(exception.Message, exception);
         }
 
         private void AddLogContextToChannel(HttpContext context, FlexLogContext logContext)
