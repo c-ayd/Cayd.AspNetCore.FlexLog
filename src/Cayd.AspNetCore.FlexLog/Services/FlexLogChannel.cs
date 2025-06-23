@@ -6,6 +6,9 @@ using System.Threading.Channels;
 
 namespace Cayd.AspNetCore.FlexLog.Services
 {
+    /// <summary>
+    /// Manages sinks and the log channel.
+    /// </summary>
     public class FlexLogChannel
     {
         private static readonly string _unboundedStrategy = "Unbounded";
@@ -48,6 +51,10 @@ namespace Cayd.AspNetCore.FlexLog.Services
             _fallbackSinks = new List<FlexLogSink>(fallbackSinks);
         }
 
+        /// <summary>
+        /// Adds a new log context to the log channel.
+        /// </summary>
+        /// <param name="logContext">New log context to be added.</param>
         public void AddLogContextToChannel(FlexLogContext logContext)
         {
             Logs.Writer.TryWrite(logContext);
