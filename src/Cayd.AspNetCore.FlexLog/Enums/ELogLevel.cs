@@ -3,7 +3,7 @@
 namespace Cayd.AspNetCore.FlexLog.Enums
 {
     /// <summary>
-    /// Log levels of FlexLog for <see cref="FlexLogEntry"/>.
+    /// Log levels for <see cref="FlexLogEntry"/>.
     /// </summary>
     public enum ELogLevel
     {

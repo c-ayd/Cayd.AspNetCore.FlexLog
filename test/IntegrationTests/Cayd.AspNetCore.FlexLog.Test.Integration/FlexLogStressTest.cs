@@ -76,7 +76,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                 Assert.Equal(10000, buffer.Count);
 
-                Assert.Equal("1234-5678", buffer[0].Id);
+                Assert.Equal("1234-5678", buffer[0].CorrelationId);
 
                 Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
                 Assert.Equal(1, buffer[0].LogEntries.Count);

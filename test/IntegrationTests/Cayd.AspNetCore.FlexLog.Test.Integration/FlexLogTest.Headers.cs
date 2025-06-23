@@ -62,7 +62,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
             Assert.Equal("TestConnection", buffer[0].Headers["Connection"]);
             Assert.Equal("1234-5678", buffer[0].Headers["Correlation-Id"]);
-            Assert.Equal("1234-5678", buffer[0].Id);
+            Assert.Equal("1234-5678", buffer[0].CorrelationId);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);

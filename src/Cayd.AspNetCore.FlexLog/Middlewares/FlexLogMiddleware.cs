@@ -232,7 +232,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 if (context.Request.Headers.TryGetValue(_correlationIdKey, out var correlationId))
                 {
-                    logContext.Id = correlationId.ToString();
+                    logContext.CorrelationId = correlationId.ToString();
                 }
             }
         }
