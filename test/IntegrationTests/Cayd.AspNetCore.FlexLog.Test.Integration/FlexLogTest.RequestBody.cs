@@ -45,7 +45,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("POST /option/request-body", buffer[0].RequestLine);
+            Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Equal("application/json", buffer[0].RequestBodyContentType);
             Assert.Equal(GetRequestBodyAsString(), buffer[0].RequestBody);
             Assert.NotNull(buffer[0].RequestBodySizeInBytes);
@@ -83,7 +83,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("POST /option/request-body", buffer[0].RequestLine);
+            Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Equal("application/json", buffer[0].RequestBodyContentType);
 
             if (isLarge)
@@ -132,7 +132,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("POST /option/request-body", buffer[0].RequestLine);
+            Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Equal("application/json", buffer[0].RequestBodyContentType);
 
             var requestBody = JsonSerializer.Deserialize<Utilities.RequestBody.RequestModel>(buffer[0].RequestBody!, new JsonSerializerOptions()
@@ -176,7 +176,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("POST /option/request-body", buffer[0].RequestLine);
+            Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Null(buffer[0].RequestBodyContentType);
             Assert.Null(buffer[0].RequestBodyRaw);
             Assert.Null(buffer[0].RequestBody);
@@ -211,7 +211,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("POST /option/request-body", buffer[0].RequestLine);
+            Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Equal("text/plain", buffer[0].RequestBodyContentType);
             Assert.Null(buffer[0].RequestBodyRaw);
             Assert.Null(buffer[0].RequestBody);
@@ -246,7 +246,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("POST /option/request-body", buffer[0].RequestLine);
+            Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Null(buffer[0].RequestBodyContentType);
             Assert.Null(buffer[0].RequestBodyRaw);
             Assert.Null(buffer[0].RequestBody);

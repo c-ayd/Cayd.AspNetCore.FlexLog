@@ -103,7 +103,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
                 Assert.Equal(CreateQueryStringForStressEndpoint(), buffer[0].QueryString);
 
-                Assert.Equal("POST /stress", buffer[0].RequestLine);
+                Assert.Equal("POST /stress", buffer[0].Endpoint);
                 Assert.Equal("application/json", buffer[0].RequestBodyContentType);
                 Assert.NotNull(buffer[0].RequestBodySizeInBytes);
                 Assert.True(buffer[0].RequestBodySizeInBytes > 0, "The request body size in the log is zero.");

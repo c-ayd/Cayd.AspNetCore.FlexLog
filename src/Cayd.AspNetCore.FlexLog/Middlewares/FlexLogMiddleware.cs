@@ -193,6 +193,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 var logContext = context.RequestServices.GetRequiredService<FlexLogContext>();
 
                 SetLogId(context, logContext);
+                SetProtocol(context, logContext);
 
                 AddClaimsToLogContext(context, logContext, _ignoredRoutesForClaims);
                 AddHeadersToLogContext(context, logContext, _ignoredRoutesForHeaders);
@@ -240,6 +241,11 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                     logContext.CorrelationId = correlationId.ToString();
                 }
             }
+        }
+
+        private void SetProtocol(HttpContext context, FlexLogContext logContext)
+        {
+            logContext.Protocol = context.Request.Protocol;
         }
 
         private void AddClaimsToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)
@@ -325,7 +331,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
         private void AddRequestLineToLogContext(HttpContext context, FlexLogContext logContext)
         {
-            logContext.RequestLine = $"{context.Request.Method} {context.Request.Path}";
+            logContext.Endpoint = $"{context.Request.Method} {context.Request.Path}";
         }
 
         private void AddQueryStringToLogContext(HttpContext context, FlexLogContext logContext, ICollection<string> ignoredRoutes)

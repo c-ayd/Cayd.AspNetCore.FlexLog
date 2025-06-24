@@ -114,6 +114,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
+            Assert.False(string.IsNullOrEmpty(buffer[0].CorrelationId), "The correlation ID is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
             Assert.Equal(1, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Warning, buffer[0].LogEntries[0].LogLevel);
@@ -160,6 +163,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
+            Assert.False(string.IsNullOrEmpty(buffer[0].CorrelationId), "The correlation ID is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
             Assert.Equal(1, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Warning, buffer[0].LogEntries[0].LogLevel);
@@ -190,6 +196,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
+            Assert.False(string.IsNullOrEmpty(buffer[0].CorrelationId), "The correlation ID is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
             Assert.Equal(1, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Warning, buffer[0].LogEntries[0].LogLevel);
@@ -225,6 +234,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
+            Assert.False(string.IsNullOrEmpty(buffer[0].CorrelationId), "The correlation ID is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
+            Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
             Assert.Equal(1, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Error, buffer[0].LogEntries[0].LogLevel);

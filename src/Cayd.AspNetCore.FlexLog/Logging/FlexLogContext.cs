@@ -16,7 +16,16 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         /// </summary>
         public string CorrelationId { get; set; }
         /// <summary>
-        /// Trace ID of the log coming from <see cref="HttpContext.TraceIdentifier"/>.
+        /// Protocol name of the request.
+        /// </summary>
+        public string Protocol { get; set; }
+        /// <summary>
+        /// Target endpoint that the request is made to.
+        /// </summary>
+        public string Endpoint { get; set; }
+
+        /// <summary>
+        /// Trace ID of the log coming from <see cref="HttpContext.TraceIdentifier"/> if applicable.
         /// </summary>
         public string? TraceId { get; set; }
 
@@ -30,19 +39,15 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         public double ElapsedTimeInMilliseconds { get; set; }
 
         /// <summary>
-        /// List of captured <see cref="Claim"/>.
+        /// List of captured <see cref="Claim"/> if applicable.
         /// </summary>
         public IDictionary<string, string?> Claims { get; set; }
 
         /// <summary>
-        /// List of captured HTTP headers.
+        /// List of captured HTTP headers if applicable.
         /// </summary>
         public IDictionary<string, string?> Headers { get; set; }
 
-        /// <summary>
-        /// Includes the HTTP request's both the method type and the request path.
-        /// </summary>
-        public string? RequestLine { get; set; }
         /// <summary>
         /// Query string of the request line.
         /// </summary>
@@ -88,6 +93,8 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         public FlexLogContext()
         {
             CorrelationId = Guid.NewGuid().ToString();
+            Protocol = string.Empty;
+            Endpoint = string.Empty;
             Timestamp = DateTime.UtcNow;
             Claims = new Dictionary<string, string?>();
             Headers = new Dictionary<string, string?>();
