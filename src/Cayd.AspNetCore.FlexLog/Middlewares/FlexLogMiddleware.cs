@@ -436,8 +436,6 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private void AddLogContextToChannel(HttpContext context, FlexLogContext logContext)
         {
             var logChannel = context.RequestServices.GetRequiredService<FlexLogChannel>();
-
-            logContext.ElapsedTimeInMilliseconds = (DateTime.UtcNow - logContext.Timestamp).TotalMilliseconds;
             logChannel.AddLogContextToChannel(logContext);
         }
     }

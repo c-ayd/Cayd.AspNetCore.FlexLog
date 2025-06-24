@@ -54,11 +54,12 @@ namespace Cayd.AspNetCore.FlexLog.Services
         }
 
         /// <summary>
-        /// Adds a new log context to the log channel.
+        /// Adds a new log context to the log channel and calculates the elapsed time as well.
         /// </summary>
         /// <param name="logContext">New log context to be added.</param>
         public void AddLogContextToChannel(FlexLogContext logContext)
         {
+            logContext.ElapsedTimeInMilliseconds = (DateTime.UtcNow - logContext.Timestamp).TotalMilliseconds;
             Logs.Writer.TryWrite(logContext);
         }
     }
