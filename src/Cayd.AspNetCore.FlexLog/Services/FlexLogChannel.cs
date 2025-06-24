@@ -1,6 +1,7 @@
 ﻿using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Options;
 using Cayd.AspNetCore.FlexLog.Sinks;
+using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
 
@@ -28,10 +29,11 @@ namespace Cayd.AspNetCore.FlexLog.Services
         {
             if (string.Equals(_dropWriteStrategy, loggingOptions?.Channel?.Strategy, System.StringComparison.OrdinalIgnoreCase))
             {
-                Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(loggingOptions?.Channel?.Capacity ?? _defaultChannelCapacity)
+                var capacity = loggingOptions?.Channel?.Capacity != null ? Math.Max(1, loggingOptions.Channel.Capacity.Value) : _defaultChannelCapacity;
+                Logs = Channel.CreateBounded<FlexLogContext>(new BoundedChannelOptions(capacity)
                 {
                     AllowSynchronousContinuations = false,
-                    Capacity = _defaultChannelCapacity,
+                    Capacity = capacity,
                     SingleReader = true,
                     SingleWriter = false,
                     FullMode = BoundedChannelFullMode.DropWrite

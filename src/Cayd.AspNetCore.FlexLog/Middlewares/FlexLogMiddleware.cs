@@ -22,6 +22,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private static readonly string _headerLimitSliceStrategy = "Slice";
         private static readonly string _headerLimitDropText = "TOO LARGE";
 
+        private static readonly int _defaultHeaderLimitLength = 512;
+        private static readonly int _defaultQueryStringLimitLength = 512;
         private static readonly long _defaultRequestBodySizeLimit = 30720;      // 30 KB
 
         private static readonly Dictionary<string, string> _claimTypeAliases = typeof(ClaimTypes)
@@ -110,7 +112,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _headerLimitOptionEnabled = loggingOptions.Value.LogDetails?.Headers?.Limit != null;
                 if (_headerLimitOptionEnabled)
                 {
-                    _headerLimitLength = loggingOptions.Value.LogDetails?.Headers?.Limit?.Length ?? 512;
+                    _headerLimitLength = loggingOptions.Value.LogDetails?.Headers?.Limit?.Length != null ? 
+                        Math.Max(1, loggingOptions.Value.LogDetails.Headers.Limit.Length!.Value) : _defaultHeaderLimitLength;
                     _headerLimitDrop = string.Equals(_headerLimitDropStrategy, loggingOptions.Value.LogDetails?.Headers?.Limit?.Strategy, StringComparison.OrdinalIgnoreCase);
                 }
             }
@@ -126,7 +129,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             _requestBodyOptionEnabled = loggingOptions.Value.LogDetails?.RequestBody?.Enabled ?? true;
             if (_requestBodyOptionEnabled)
             {
-                _requestBodySizeLimit = loggingOptions.Value.LogDetails?.RequestBody?.BodySizeLimitInBytes ?? _defaultRequestBodySizeLimit;
+                _requestBodySizeLimit = loggingOptions.Value.LogDetails?.RequestBody?.BodySizeLimitInBytes != null ? 
+                    Math.Max(1, loggingOptions.Value.LogDetails.RequestBody.BodySizeLimitInBytes.Value) : _defaultRequestBodySizeLimit;
                 _redactedKeysFromRequestBody = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.RequestBody.RedactedKeys, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
@@ -163,7 +167,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 _queryStringLimitOptionEnabled = loggingOptions.Value.LogDetails?.QueryString?.Limit != null;
                 if (_queryStringLimitOptionEnabled)
                 {
-                    _queryStringLimitLength = loggingOptions.Value.LogDetails?.QueryString?.Limit?.Length ?? 512;
+                    _queryStringLimitLength = loggingOptions.Value.LogDetails?.QueryString?.Limit?.Length != null ?
+                        Math.Max(1, loggingOptions.Value.LogDetails.QueryString.Limit.Length!.Value) : _defaultQueryStringLimitLength;
                 }
                 
                 _ignoredRoutesForQueryString = loggingOptions.Value.LogDetails?.QueryString?.IgnoredRoutes != null ?

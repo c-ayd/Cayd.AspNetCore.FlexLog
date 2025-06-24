@@ -39,8 +39,8 @@ namespace Cayd.AspNetCore.FlexLog.Services
             _logChannel = logChannel;
             _logger = logger;
 
-            _bufferLimit = loggingOptions.Value.BufferLimit ?? _defaultBufferLimit;
-            _timer = (loggingOptions.Value.TimerInSeconds ?? _defaultTimerInSeconds) * 1000;
+            _bufferLimit = loggingOptions.Value.BufferLimit != null ? Math.Max(1, loggingOptions.Value.BufferLimit.Value) : _defaultBufferLimit;
+            _timer = (loggingOptions.Value.TimerInSeconds != null ? Math.Max(1, loggingOptions.Value.TimerInSeconds.Value) : _defaultTimerInSeconds) * 1000;
 
             _redactedKeysFromRequest = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
                 new HashSet<string>(loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys!, StringComparer.OrdinalIgnoreCase) :
