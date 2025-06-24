@@ -12,7 +12,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
     public class FlexLogContext
     {
         /// <summary>
-        /// The unique ID of the log and it can be used as a correlation ID.
+        /// The unique ID of the log that is generated automatically. It can be overriden if needed and can be used as a correlation ID.
         /// </summary>
         public string CorrelationId { get; set; }
         /// <summary>
