@@ -130,7 +130,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             }
             else
             {
-                Assert.Null(buffer[0].QueryString);
+                Assert.Equal("TOO LARGE", buffer[0].QueryString);
             }
 
 #if NET6_0_OR_GREATER
