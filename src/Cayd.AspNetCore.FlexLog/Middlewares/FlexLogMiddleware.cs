@@ -1,4 +1,5 @@
-﻿using Cayd.AspNetCore.FlexLog.Logging;
+﻿using Cayd.AspNetCore.FlexLog.Infrastructure;
+using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Options;
 using Cayd.AspNetCore.FlexLog.Services;
 using Microsoft.AspNetCore.Http;
@@ -26,21 +27,21 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private static readonly int _defaultQueryStringLimitLength = 512;
         private static readonly long _defaultRequestBodySizeLimit = 30720;      // 30 KB
 
-        private static readonly Dictionary<string, string> _claimTypeAliases = typeof(ClaimTypes)
+        private static readonly BidirectionalDictionary<string> _claimTypeAliases =
+            new BidirectionalDictionary<string>(typeof(ClaimTypes)
             .GetFields(BindingFlags.Static | BindingFlags.Public)
             .Where(f => f.FieldType == typeof(string))
             .ToDictionary(
                 f => f.Name,
-                f => (string)f.GetValue(null)!,
-                StringComparer.OrdinalIgnoreCase
-            );
+                f => (string)f.GetValue(null)!
+            ), StringComparer.OrdinalIgnoreCase);
 
         private readonly RequestDelegate _next;
 
         private readonly List<string> _ignoredRoutes;
 
         private readonly bool _claimOptionEnabled;
-        private readonly HashSet<string> _includedClaimTypes;
+        private readonly List<string> _includedClaimTypes;
         private readonly HashSet<string> _ignoredClaimTypes;
         private readonly List<string> _ignoredRoutesForClaims;
 
@@ -55,11 +56,9 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
         private readonly bool _requestBodyOptionEnabled;
         private readonly long _requestBodySizeLimit;
-        private readonly HashSet<string> _redactedKeysFromRequestBody;
         private readonly List<string> _ignoredRoutesForRequestBody;
 
         private readonly bool _responseBodyOptionEnabled;
-        private readonly HashSet<string> _redactedKeysFromResponseBody;
         private readonly List<string> _ignoredRoutesForResponseBody;
 
         private readonly bool _queryStringOptionEnabled;
@@ -79,8 +78,8 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             if (_claimOptionEnabled)
             {
                 _includedClaimTypes = loggingOptions.Value.LogDetails?.Claims?.IncludedTypes != null ?
-                    new HashSet<string>(loggingOptions.Value.LogDetails.Claims.IncludedTypes, StringComparer.OrdinalIgnoreCase) :
-                    new HashSet<string>();
+                    new List<string>(loggingOptions.Value.LogDetails.Claims.IncludedTypes) :
+                    new List<string>();
                 _ignoredClaimTypes = loggingOptions.Value.LogDetails?.Claims?.IgnoredTypes != null ?
                     new HashSet<string>(loggingOptions.Value.LogDetails.Claims.IgnoredTypes, StringComparer.OrdinalIgnoreCase) :
                     new HashSet<string>();
@@ -90,7 +89,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
             else
             {
-                _includedClaimTypes = new HashSet<string>();
+                _includedClaimTypes = new List<string>();
                 _ignoredClaimTypes = new HashSet<string>();
                 _ignoredRoutesForClaims = new List<string>();
             }
@@ -131,9 +130,6 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 _requestBodySizeLimit = loggingOptions.Value.LogDetails?.RequestBody?.BodySizeLimitInBytes != null ? 
                     Math.Max(1, loggingOptions.Value.LogDetails.RequestBody.BodySizeLimitInBytes.Value) : _defaultRequestBodySizeLimit;
-                _redactedKeysFromRequestBody = loggingOptions.Value.LogDetails?.RequestBody?.RedactedKeys != null ?
-                    new HashSet<string>(loggingOptions.Value.LogDetails.RequestBody.RedactedKeys, StringComparer.OrdinalIgnoreCase) :
-                    new HashSet<string>();
                 _ignoredRoutesForRequestBody = loggingOptions.Value.LogDetails?.RequestBody?.IgnoredRoutes != null ?
                     loggingOptions.Value.LogDetails.RequestBody.IgnoredRoutes :
                     new List<string>();
@@ -141,23 +137,18 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             else
             {
                 _requestBodySizeLimit = _defaultRequestBodySizeLimit;
-                _redactedKeysFromRequestBody = new HashSet<string>();
                 _ignoredRoutesForRequestBody = new List<string>();
             }
 
             _responseBodyOptionEnabled = loggingOptions.Value.LogDetails?.ResponseBody?.Enabled ?? true;
             if (_responseBodyOptionEnabled)
             {
-                _redactedKeysFromResponseBody = loggingOptions.Value.LogDetails?.ResponseBody?.RedactedKeys != null ?
-                    new HashSet<string>(loggingOptions.Value.LogDetails.ResponseBody.RedactedKeys, StringComparer.OrdinalIgnoreCase) :
-                    new HashSet<string>();
                 _ignoredRoutesForResponseBody = loggingOptions.Value.LogDetails?.ResponseBody?.IgnoredRoutes != null ?
                     loggingOptions.Value.LogDetails.ResponseBody.IgnoredRoutes :
                     new List<string>();
             }
             else
             {
-                _redactedKeysFromResponseBody = new HashSet<string>();
                 _ignoredRoutesForResponseBody = new List<string>();
             }
 
@@ -257,28 +248,42 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 foreach (var type in _includedClaimTypes)
                 {
-                    _claimTypeAliases.TryGetValue(type, out var claimType);
-
+                    string claimTypeName = type;
                     var claim = context.User.Claims
-                        .Where(c => claimType != null ?
-                            string.Equals(claimType, c.Type, StringComparison.OrdinalIgnoreCase) :
-                            string.Equals(type, c.Type, StringComparison.OrdinalIgnoreCase))
+                        .Where(c => string.Equals(type, c.Type))
                         .FirstOrDefault();
 
-                    logContext.Claims.Add(claimType ?? type, claim?.Value);
+                    if (claim == null)
+                    {
+                        _claimTypeAliases.TryGetValue(type, out var claimTypeAlias);
+                        claim = context.User.Claims
+                            .Where(c => string.Equals(claimTypeAlias, c.Type, StringComparison.OrdinalIgnoreCase))
+                            .FirstOrDefault();
+
+                        if (claim == null)
+                            continue;
+
+                        claimTypeName = claimTypeAlias!;
+                    }
+
+                    logContext.Claims.Add(claimTypeName, claim.Value);
                 }
             }
             else
             {
                 foreach (var claim in context.User.Claims)
                 {
-                    if (_ignoredClaimTypes.Count > 0 &&
-                        _ignoredClaimTypes.Any(t => _claimTypeAliases.TryGetValue(t, out var claimType) ?
-                            string.Equals(claimType, claim.Type, StringComparison.OrdinalIgnoreCase) :
-                            string.Equals(t, claim.Type, StringComparison.OrdinalIgnoreCase)))
-                        continue;
+                    if (_ignoredClaimTypes.Count > 0)
+                    {
+                        if (_ignoredClaimTypes.Contains(claim.Type))
+                            continue;
 
-                    logContext.Claims.Add(claim.Type, claim?.Value);
+                        _claimTypeAliases.TryGetValue(claim.Type, out var claimTypeAlias);
+                        if (claimTypeAlias != null && _ignoredClaimTypes.Contains(claimTypeAlias))
+                            continue;
+                    }
+
+                    logContext.Claims.Add(claim.Type, claim.Value);
                 }
             }
         }

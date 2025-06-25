@@ -60,8 +60,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal(2, buffer[0].Claims.Count);
+            Assert.Equal(3, buffer[0].Claims.Count);
             Assert.Equal("TestUser", buffer[0].Claims[ClaimTypes.NameIdentifier]);
+            Assert.Equal("test@test.com", buffer[0].Claims[ClaimTypes.Email]);
             Assert.Equal("CustomValue", buffer[0].Claims["CustomClaim"]);
 
 #if NET6_0_OR_GREATER
