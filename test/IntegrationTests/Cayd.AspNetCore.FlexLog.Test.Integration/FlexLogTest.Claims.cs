@@ -92,11 +92,11 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal(3, buffer[0].Claims.Count);
+            Assert.Equal(2, buffer[0].Claims.Count);
             Assert.Equal("test@test.com", buffer[0].Claims[ClaimTypes.Email]);
             Assert.Equal("TestName", buffer[0].Claims[ClaimTypes.Name]);
-            Assert.Equal("CustomValue", buffer[0].Claims["CustomClaim"]);
             Assert.False(buffer[0].Claims.TryGetValue(ClaimTypes.NameIdentifier, out var _), "The name identifier claim is in the log.");
+            Assert.False(buffer[0].Claims.TryGetValue("Customclaim", out var _), "The custom claim is in the log.");
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);

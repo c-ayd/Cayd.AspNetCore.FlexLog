@@ -251,7 +251,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 {
                     string claimTypeName = type;
                     var claim = context.User.Claims
-                        .Where(c => string.Equals(type, c.Type))
+                        .Where(c => string.Equals(type, c.Type, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
                     if (claim == null)
