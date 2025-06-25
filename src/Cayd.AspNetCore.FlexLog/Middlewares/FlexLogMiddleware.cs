@@ -309,7 +309,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                 foreach (var kvHeader in context.Request.Headers)
                 {
                     if (!context.Request.Headers.TryGetValue(kvHeader.Key, out var headerValue) ||
-                        (_ignoredHeaderKeys.Count > 0 && _ignoredHeaderKeys.Any(t => string.Equals(t, kvHeader.Key, StringComparison.OrdinalIgnoreCase))))
+                        (_ignoredHeaderKeys.Count > 0 && _ignoredHeaderKeys.Contains(kvHeader.Key)))
                         continue;
 
                     logContext.Headers.Add(kvHeader.Key, GetHeaderString(headerValue));

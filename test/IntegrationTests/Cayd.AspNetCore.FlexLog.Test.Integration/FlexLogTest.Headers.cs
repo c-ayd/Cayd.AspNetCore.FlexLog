@@ -39,7 +39,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
         }
 
         [Fact]
-        public async Task HeadersEndpoint_WhenCorrelationIdOptionIsSet_ShouldChangeLogId()
+        public async Task HeadersEndpoint_WhenCorrelationIdOptionIsSet_ShouldChangeCorrelationId()
         {
             // Arrange
             var sink = new TestSink();
