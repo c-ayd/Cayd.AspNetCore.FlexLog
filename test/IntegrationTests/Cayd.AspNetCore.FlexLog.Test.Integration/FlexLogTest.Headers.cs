@@ -91,7 +91,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
+            Assert.Equal("TestAgent", buffer[0].Headers["user-agent"]);
             Assert.False(buffer[0].Headers.TryGetValue("Accept", out var _), "The accept header is in the log.");
             Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "The connection header is in the log.");
             Assert.False(buffer[0].Headers.TryGetValue("Correlation-Id", out var _), "The correlation ID header is in the log.");
