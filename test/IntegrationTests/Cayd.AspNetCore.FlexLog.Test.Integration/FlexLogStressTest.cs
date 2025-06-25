@@ -79,13 +79,18 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
                 Assert.Equal("1234-5678", buffer[0].CorrelationId);
 
                 Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
-                Assert.Equal(1, buffer[0].LogEntries.Count);
+                Assert.Equal(2, buffer[0].LogEntries.Count);
                 Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[0].LogLevel);
-                Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[0].Category);
+                Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.TestService", buffer[0].LogEntries[0].Category);
                 Assert.Equal("Test info", buffer[0].LogEntries[0].Message);
                 Assert.Null(buffer[0].LogEntries[0].Exception);
+                Assert.Null(buffer[0].LogEntries[0].Metadata);
+                Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[1].LogLevel);
+                Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[1].Category);
+                Assert.Equal("Test info", buffer[0].LogEntries[1].Message);
+                Assert.Null(buffer[0].LogEntries[1].Exception);
 
-                int id = ((dynamic)buffer[0].LogEntries[0].Metadata!).Id;
+                int id = ((dynamic)buffer[0].LogEntries[1].Metadata!).Id;
                 if (!ids.Remove(id))
                 {
                     Assert.Fail($"ID #{id} was not found in the hash set.");

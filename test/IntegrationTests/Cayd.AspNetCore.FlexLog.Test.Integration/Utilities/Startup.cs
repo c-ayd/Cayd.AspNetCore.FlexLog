@@ -19,6 +19,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<TestService>();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -40,6 +41,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
                         Test = 123
                     });
 
+                    var testService = context.RequestServices.GetRequiredService<TestService>();
+                    testService.Log();
+
                     context.Response.ContentType = "text/plain";
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     await context.Response.WriteAsync("Default Endpoint");
@@ -52,6 +56,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
 
                 endpoints.MapPost("/stress", async context =>
                 {
+                    var testService = context.RequestServices.GetRequiredService<TestService>();
+                    testService.Log();
+
                     var body = await JsonSerializer.DeserializeAsync<StressTest.RequestModel>(context.Request.Body, new JsonSerializerOptions()
                     {
                         PropertyNameCaseInsensitive = true

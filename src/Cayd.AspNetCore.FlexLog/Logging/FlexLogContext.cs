@@ -90,6 +90,9 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         /// </summary>
         public IList<FlexLogEntry> LogEntries { get; set; }
 
+        /// <summary>
+        /// Creates a new log context.
+        /// </summary>
         public FlexLogContext()
         {
             CorrelationId = Guid.NewGuid().ToString();

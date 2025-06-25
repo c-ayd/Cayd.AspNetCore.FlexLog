@@ -118,12 +118,17 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
-            Assert.Equal(1, buffer[0].LogEntries.Count);
+            Assert.Equal(2, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Warning, buffer[0].LogEntries[0].LogLevel);
             Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[0].Category);
             Assert.Equal("Test warning", buffer[0].LogEntries[0].Message);
             Assert.Null(buffer[0].LogEntries[0].Exception);
             Assert.Equal(123, ((dynamic)buffer[0].LogEntries[0].Metadata!).Test);
+            Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[1].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.TestService", buffer[0].LogEntries[1].Category);
+            Assert.Equal("Test info", buffer[0].LogEntries[1].Message);
+            Assert.Null(buffer[0].LogEntries[1].Exception);
+            Assert.Null(buffer[0].LogEntries[1].Metadata);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);
@@ -167,12 +172,17 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
-            Assert.Equal(1, buffer[0].LogEntries.Count);
+            Assert.Equal(2, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Warning, buffer[0].LogEntries[0].LogLevel);
             Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[0].Category);
             Assert.Equal("Test warning", buffer[0].LogEntries[0].Message);
             Assert.Null(buffer[0].LogEntries[0].Exception);
             Assert.Equal(123, ((dynamic)buffer[0].LogEntries[0].Metadata!).Test);
+            Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[1].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.TestService", buffer[0].LogEntries[1].Category);
+            Assert.Equal("Test info", buffer[0].LogEntries[1].Message);
+            Assert.Null(buffer[0].LogEntries[1].Exception);
+            Assert.Null(buffer[0].LogEntries[1].Metadata);
         }
 
         [Fact]
@@ -200,12 +210,17 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
-            Assert.Equal(1, buffer[0].LogEntries.Count);
+            Assert.Equal(2, buffer[0].LogEntries.Count);
             Assert.Equal(ELogLevel.Warning, buffer[0].LogEntries[0].LogLevel);
             Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", buffer[0].LogEntries[0].Category);
             Assert.Equal("Test warning", buffer[0].LogEntries[0].Message);
             Assert.Null(buffer[0].LogEntries[0].Exception);
             Assert.Equal(123, ((dynamic)buffer[0].LogEntries[0].Metadata!).Test);
+            Assert.Equal(ELogLevel.Information, buffer[0].LogEntries[1].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.TestService", buffer[0].LogEntries[1].Category);
+            Assert.Equal("Test info", buffer[0].LogEntries[1].Message);
+            Assert.Null(buffer[0].LogEntries[1].Exception);
+            Assert.Null(buffer[0].LogEntries[1].Metadata);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);

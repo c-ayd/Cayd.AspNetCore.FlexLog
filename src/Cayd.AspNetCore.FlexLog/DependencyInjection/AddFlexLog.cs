@@ -5,6 +5,7 @@ using Cayd.AspNetCore.FlexLog.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 
 #if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
@@ -44,9 +45,8 @@ namespace Cayd.AspNetCore.FlexLog.DependencyInjection
 
             services.Configure<FlexLogOptions>(configuration.GetSection(FlexLogOptions.OptionKey));
 
-            services.AddScoped<FlexLogContext>();
+            services.AddScoped<IList<FlexLogEntry>>(sp => new List<FlexLogEntry>());
             services.AddScoped(typeof(IFlexLogger<>), typeof(FlexLogger<>));
-
             services.AddSingleton(new FlexLogChannel(loggingOptions, config.GetSinks(), config.GetFallbackSinks()));
             services.AddHostedService<FlexLogBackgroundService>();
         }
