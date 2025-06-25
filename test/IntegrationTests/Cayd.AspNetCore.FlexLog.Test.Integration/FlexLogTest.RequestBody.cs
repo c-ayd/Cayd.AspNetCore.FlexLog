@@ -61,9 +61,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
         }
 
         [Theory]
-        [InlineData("Utilities/RequestBody/appsettings.RequestBody.SizeSmall.json", false)]
-        [InlineData("Utilities/RequestBody/appsettings.RequestBody.SizeLarge.json", true)]
-        public async Task RequestBodyEndpoint_WhenRequestBodySizeIsSet_ShouldOrShouldNotLogRequestBodyInDetailDependingOnWhetherLimitIsLargeOrNot(string appsettingsPath, bool isLarge)
+        [InlineData("Utilities/RequestBody/appsettings.RequestBody.SizeSmall.json", true)]
+        [InlineData("Utilities/RequestBody/appsettings.RequestBody.SizeLarge.json", false)]
+        public async Task RequestBodyEndpoint_WhenRequestBodySizeIsSet_ShouldOrShouldNotLogRequestBodyInDetailDependingOnWhetherLimitIsLargeOrNot(string appsettingsPath, bool isRequestBodyLarge)
         {
             // Arrange
             var sink = new TestSink();
@@ -86,22 +86,22 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Equal("POST /option/request-body", buffer[0].Endpoint);
             Assert.Equal("application/json", buffer[0].RequestBodyContentType);
 
-            if (isLarge)
+            if (isRequestBodyLarge)
+            {
+                Assert.Null(buffer[0].RequestBodyRaw);
+                Assert.Equal("TOO LARGE", buffer[0].RequestBody);
+                Assert.NotNull(buffer[0].RequestBodySizeInBytes);
+                Assert.True(buffer[0].RequestBodySizeInBytes > 0, "The body size in the log is zero.");
+                Assert.NotNull(buffer[0].IsRequestBodyTooLarge);
+                Assert.True(buffer[0].IsRequestBodyTooLarge, "The request body size is not large according to the log.");
+            }
+            else
             {
                 Assert.Equal(GetRequestBodyAsString(), buffer[0].RequestBody);
                 Assert.NotNull(buffer[0].RequestBodySizeInBytes);
                 Assert.True(buffer[0].RequestBodySizeInBytes > 0, "The body size in the log is zero.");
                 Assert.NotNull(buffer[0].IsRequestBodyTooLarge);
                 Assert.False(buffer[0].IsRequestBodyTooLarge, "The request body size is too large according to the log.");
-            }
-            else
-            {
-                Assert.Null(buffer[0].RequestBodyRaw);
-                Assert.True(string.IsNullOrEmpty(buffer[0].RequestBody), "The request body is logged.");
-                Assert.NotNull(buffer[0].RequestBodySizeInBytes);
-                Assert.True(buffer[0].RequestBodySizeInBytes > 0, "The body size in the log is zero.");
-                Assert.NotNull(buffer[0].IsRequestBodyTooLarge);
-                Assert.True(buffer[0].IsRequestBodyTooLarge, "The request body size is not large according to the log.");
             }
 
 #if NET6_0_OR_GREATER

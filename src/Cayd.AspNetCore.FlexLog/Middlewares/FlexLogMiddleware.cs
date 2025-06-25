@@ -26,6 +26,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private static readonly int _defaultHeaderLimitLength = 512;
         private static readonly int _defaultQueryStringLimitLength = 512;
         private static readonly long _defaultRequestBodySizeLimit = 30720;      // 30 KB
+        private static readonly string _requestBodySizeTooLargeText = "TOO LARGE";
 
         private static readonly BidirectionalDictionary<string> _claimTypeAliases =
             new BidirectionalDictionary<string>(typeof(ClaimTypes)
@@ -377,7 +378,11 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
                 logContext.RequestBodySizeInBytes = memoryStream.Length;
                 logContext.IsRequestBodyTooLarge = logContext.RequestBodySizeInBytes >= _requestBodySizeLimit;
-                if (!logContext.IsRequestBodyTooLarge.Value)
+                if (logContext.IsRequestBodyTooLarge.Value)
+                {
+                    logContext.RequestBody = _requestBodySizeTooLargeText;
+                }
+                else
                 {
                     logContext.RequestBodyRaw = memoryStream.ToArray();
                 }
