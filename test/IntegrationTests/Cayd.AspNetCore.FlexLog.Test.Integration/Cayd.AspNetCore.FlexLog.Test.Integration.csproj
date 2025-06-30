@@ -30,4 +30,10 @@
     <ProjectReference Include="..\..\..\src\Cayd.AspNetCore.FlexLog\Cayd.AspNetCore.FlexLog.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Utilities\StressTest\appsettings.StressTest.Headers.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

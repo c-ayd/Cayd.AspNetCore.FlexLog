@@ -25,7 +25,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 #endif
 
             // Act
-            var isSuccessful = (await client.GetAsync("/option/query-string" + GetQueryStringForQueryStringEndpoint(emptyQueryString))).IsSuccessStatusCode;
+            var queryString = GetQueryStringForQueryStringEndpoint(emptyQueryString);
+            var isSuccessful = (await client.GetAsync("/option/query-string" + queryString)).IsSuccessStatusCode;
             if (!isSuccessful)
                 Assert.Fail("Something went wrong while making HTTP requests.");
 
@@ -33,7 +34,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.Equal(GetQueryStringForQueryStringEndpoint(emptyQueryString), buffer[0].QueryString);
+            Assert.Equal(queryString, buffer[0].QueryString);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);
