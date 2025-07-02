@@ -230,6 +230,33 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
         }
 
         [Fact]
+        public async Task DefaultEndpoint_WhenInitializeAndDisposeIsDefined_ShouldBeCalledOnce()
+        {
+            // Arrange
+            var sink = new TestSinkResource();
+
+            // Act
+#if NET6_0_OR_GREATER
+            var (host, client) = await CreateHost("Utilities/appsettings.FastTimer.json", sink);
+#else
+            var (server, client) = CreateServer("Utilities/appsettings.FastTimer.json", sink);
+#endif
+
+            await Task.Delay(1000);
+
+            // Assert
+            Assert.Equal(1, sink.Counter);
+
+#if NET6_0_OR_GREATER
+            await Dispose(host, client);
+#else
+            Dispose(server, client);
+#endif
+
+            Assert.Equal(0, sink.Counter);
+        }
+
+        [Fact]
         public async Task ExceptionEndpoint_WhenExceptionIsThrown_ShouldLogException()
         {
             // Arrange
