@@ -17,7 +17,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Sinks
             _delay = delay;
         }
 
-        public override async Task WriteBatchAsync(IReadOnlyList<FlexLogContext> buffer)
+        public override async Task SaveLogsAsync(IReadOnlyList<FlexLogContext> buffer)
         {
             if (_counter == 0)
             {

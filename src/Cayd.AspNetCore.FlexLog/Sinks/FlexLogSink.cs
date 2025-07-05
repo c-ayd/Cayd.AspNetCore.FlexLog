@@ -22,6 +22,6 @@ namespace Cayd.AspNetCore.FlexLog.Sinks
         /// Called by FlexLog to provide the logs in the buffer.
         /// </summary>
         /// <param name="buffer">List of logs to handle.</param>
-        public abstract Task WriteBatchAsync(IReadOnlyList<FlexLogContext> buffer);
+        public abstract Task SaveLogsAsync(IReadOnlyList<FlexLogContext> buffer);
     }
 }

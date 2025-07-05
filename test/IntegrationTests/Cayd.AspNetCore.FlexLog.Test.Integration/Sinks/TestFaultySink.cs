@@ -10,7 +10,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Sinks
 {
     public class TestFaultySink : FlexLogSink
     {
-        public override async Task WriteBatchAsync(IReadOnlyList<FlexLogContext> buffer)
+        public override async Task SaveLogsAsync(IReadOnlyList<FlexLogContext> buffer)
         {
             throw new Exception("Test flush exception");
         }

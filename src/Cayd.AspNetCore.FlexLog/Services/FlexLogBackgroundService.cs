@@ -163,7 +163,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
                 .Select(s => new
                 {
                     s.GetType().Name,
-                    Task = s.WriteBatchAsync(_buffer)
+                    Task = s.SaveLogsAsync(_buffer)
                 })
                 .ToList();
 
