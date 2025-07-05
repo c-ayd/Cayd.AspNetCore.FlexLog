@@ -2,12 +2,12 @@
 FlexLog is an easy, flexible and detailed logging library that provides the logging infrastructure out of the box for ASP.NET Core. After setting up the library, you can create your own custom sink classes to store the buffered logs anywhere in any format you want.
 
 ## Quick Start
-After installing the package, you need to create your own sink classes as well as fallback sinks if needed. To do that, you need to create a class inheriting from the `FlexLogSink` class and override the method called `WriteBatchAsync`. This method provides the buffered logs ready to be stored. In this method, you can use elements in the buffer to create your own format and save anywhere you want. You can also use `InitalizeAsync` and `DisposeAsync` methods the initialize and release the resources that your sink class uses if needed.
+After installing the package, you need to create your own sink classes as well as fallback sinks if needed. To do that, you need to create a class inheriting from the `FlexLogSink` class and override the method called `SaveLogsAsync`. This method provides the buffered logs ready to be stored. In this method, you can use elements in the buffer to create your own format and save anywhere you want. You can also use `InitalizeAsync` and `DisposeAsync` methods the initialize and release the resources that your sink class uses if needed.
 
 ```csharp
 public class MySink : FlexLogSink
 {
-    public override async Task WriteBatchAsync(IReadOnlyList<FlexLogContext> buffer)
+    public override async Task SaveLogsAsync(IReadOnlyList<FlexLogContext> buffer)
     {
         // ... use 'buffer' to create your own format and save the logs.
     }
