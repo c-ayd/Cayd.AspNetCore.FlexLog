@@ -1,5 +1,6 @@
 ﻿using Cayd.AspNetCore.FlexLog.DependencyInjection;
 using Cayd.AspNetCore.FlexLog.Enums;
+using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Sinks;
 using Cayd.AspNetCore.FlexLog.Test.Integration.Sinks;
 using Cayd.AspNetCore.FlexLog.Test.Integration.Utilities;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -221,6 +223,73 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Equal("Test info", buffer[0].LogEntries[1].Message);
             Assert.Null(buffer[0].LogEntries[1].Exception);
             Assert.Null(buffer[0].LogEntries[1].Metadata);
+
+#if NET6_0_OR_GREATER
+            await Dispose(host, client);
+#else
+            Dispose(server, client);
+#endif
+        }
+
+        [Fact]
+        public async Task DefaultEndpoint_WhenSinkIsFaultyOnce_ShouldFlushBufferToFallbackSinkAndContinueToUseMainSink()
+        {
+            // Arrange
+            var sink = new TestFaultyOnceSink();
+            var fallbackSink = new TestSink();
+#if NET6_0_OR_GREATER
+            var (host, client) = await CreateHost("Utilities/appsettings.FastTimer.json", sink, fallbackSink);
+#else
+            var (server, client) = CreateServer("Utilities/appsettings.FastTimer.json", sink, fallbackSink);
+#endif
+
+            // Act
+            var isSuccessful = (await client.GetAsync("/")).IsSuccessStatusCode;
+            if (!isSuccessful)
+                Assert.Fail("Something went wrong while making HTTP requests.");
+
+            var fallbackSinkBuffer = await fallbackSink.GetBuffer();
+
+            isSuccessful = (await client.GetAsync("/")).IsSuccessStatusCode;
+            if (!isSuccessful)
+                Assert.Fail("Something went wrong while making HTTP requests.");
+
+            var mainSinkBuffer = await sink.GetBuffer();
+
+            // Assert
+            Assert.Equal(1, fallbackSinkBuffer.Count);
+            Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].CorrelationId), "The correlation ID is null or empty.");
+            Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Protocol), "The protocol is null or empty.");
+            Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Endpoint), "The endpoint is null or empty.");
+            Assert.True(fallbackSinkBuffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
+            Assert.Equal(2, fallbackSinkBuffer[0].LogEntries.Count);
+            Assert.Equal(ELogLevel.Warning, fallbackSinkBuffer[0].LogEntries[0].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", fallbackSinkBuffer[0].LogEntries[0].Category);
+            Assert.Equal("Test warning", fallbackSinkBuffer[0].LogEntries[0].Message);
+            Assert.Null(fallbackSinkBuffer[0].LogEntries[0].Exception);
+            Assert.Equal(123, ((dynamic)fallbackSinkBuffer[0].LogEntries[0].Metadata!).Test);
+            Assert.Equal(ELogLevel.Information, fallbackSinkBuffer[0].LogEntries[1].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.TestService", fallbackSinkBuffer[0].LogEntries[1].Category);
+            Assert.Equal("Test info", fallbackSinkBuffer[0].LogEntries[1].Message);
+            Assert.Null(fallbackSinkBuffer[0].LogEntries[1].Exception);
+            Assert.Null(fallbackSinkBuffer[0].LogEntries[1].Metadata);
+
+            Assert.Equal(1, mainSinkBuffer.Count);
+            Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].CorrelationId), "The correlation ID is null or empty.");
+            Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Protocol), "The protocol is null or empty.");
+            Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Endpoint), "The endpoint is null or empty.");
+            Assert.True(mainSinkBuffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
+            Assert.Equal(2, mainSinkBuffer[0].LogEntries.Count);
+            Assert.Equal(ELogLevel.Warning, mainSinkBuffer[0].LogEntries[0].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.Startup", mainSinkBuffer[0].LogEntries[0].Category);
+            Assert.Equal("Test warning", mainSinkBuffer[0].LogEntries[0].Message);
+            Assert.Null(mainSinkBuffer[0].LogEntries[0].Exception);
+            Assert.Equal(123, ((dynamic)mainSinkBuffer[0].LogEntries[0].Metadata!).Test);
+            Assert.Equal(ELogLevel.Information, mainSinkBuffer[0].LogEntries[1].LogLevel);
+            Assert.Equal("Cayd.AspNetCore.FlexLog.Test.Integration.Utilities.TestService", mainSinkBuffer[0].LogEntries[1].Category);
+            Assert.Equal("Test info", mainSinkBuffer[0].LogEntries[1].Message);
+            Assert.Null(mainSinkBuffer[0].LogEntries[1].Exception);
+            Assert.Null(mainSinkBuffer[0].LogEntries[1].Metadata);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);
