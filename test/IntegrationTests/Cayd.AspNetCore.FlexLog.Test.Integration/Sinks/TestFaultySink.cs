@@ -12,7 +12,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Sinks
     {
         public override async Task SaveLogsAsync(IReadOnlyList<FlexLogContext> buffer)
         {
-            throw new Exception("Test flush exception");
+            throw new Exception("Test exception");
         }
     }
 }
