@@ -15,7 +15,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         /// <summary>
         /// Unique ID of the log that is generated automatically.
         /// </summary>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// Correlation ID of the log. It needs to be set manually or can be set automatically via the FlexLog option <c>'CorrelationIdKey'</c> if applicable.
         /// </summary>
@@ -100,7 +100,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         /// </summary>
         public FlexLogContext()
         {
-            Id = Uuid.Uuid.V7.Generate().ToString();
+            Id = Uuid.Uuid.V7.Generate();
             Protocol = string.Empty;
             Endpoint = string.Empty;
             Timestamp = DateTime.UtcNow;
