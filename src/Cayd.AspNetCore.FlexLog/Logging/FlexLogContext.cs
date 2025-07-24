@@ -91,7 +91,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         public string? ResponseBody { get; set; }
 
         /// <summary>
-        /// Log entries of the HTTP request that are added via <see cref="IFlexLogger{T}"/>.
+        /// Log entries of the request that are added via <see cref="IFlexLogger{T}"/>.
         /// </summary>
         public IList<FlexLogEntry> LogEntries { get; set; }
 
