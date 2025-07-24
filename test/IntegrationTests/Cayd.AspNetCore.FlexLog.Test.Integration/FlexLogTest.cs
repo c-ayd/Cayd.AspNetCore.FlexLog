@@ -116,7 +116,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.False(string.IsNullOrEmpty(buffer[0].Id), "The ID is null or empty.");
+            Assert.NotEqual(Guid.Empty, buffer[0].Id);
             Assert.Null(buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
@@ -171,7 +171,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.False(string.IsNullOrEmpty(buffer[0].Id), "The ID is null or empty.");
+            Assert.NotEqual(Guid.Empty, buffer[0].Id);
             Assert.Null(buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
@@ -210,7 +210,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.False(string.IsNullOrEmpty(buffer[0].Id), "The ID is null or empty.");
+            Assert.NotEqual(Guid.Empty, buffer[0].Id);
             Assert.Null(buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
@@ -238,12 +238,12 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
         public async Task DefaultEndpoint_WhenSinkIsFaultyOnce_ShouldFlushBufferToFallbackSinkAndContinueToUseMainSink()
         {
             // Arrange
-            var sink = new TestFaultyOnceSink();
+            var mainSink = new TestFaultyOnceSink();
             var fallbackSink = new TestSink();
 #if NET6_0_OR_GREATER
-            var (host, client) = await CreateHost("Utilities/appsettings.FastTimer.json", sink, fallbackSink);
+            var (host, client) = await CreateHost("Utilities/appsettings.FastTimer.json", mainSink, fallbackSink);
 #else
-            var (server, client) = CreateServer("Utilities/appsettings.FastTimer.json", sink, fallbackSink);
+            var (server, client) = CreateServer("Utilities/appsettings.FastTimer.json", mainSink, fallbackSink);
 #endif
 
             // Act
@@ -257,11 +257,11 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             if (!isSuccessful)
                 Assert.Fail("Something went wrong while making HTTP requests.");
 
-            var mainSinkBuffer = await sink.GetBuffer();
+            var mainSinkBuffer = await mainSink.GetBuffer();
 
             // Assert
             Assert.Equal(1, fallbackSinkBuffer.Count);
-            Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Id), "The ID is null or empty.");
+            Assert.NotEqual(Guid.Empty, fallbackSinkBuffer[0].Id);
             Assert.Null(fallbackSinkBuffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Endpoint), "The endpoint is null or empty.");
@@ -279,7 +279,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Null(fallbackSinkBuffer[0].LogEntries[1].Metadata);
 
             Assert.Equal(1, mainSinkBuffer.Count);
-            Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Id), "The ID is null or empty.");
+            Assert.NotEqual(Guid.Empty, mainSinkBuffer[0].Id);
             Assert.Null(mainSinkBuffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Endpoint), "The endpoint is null or empty.");
@@ -350,7 +350,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.False(string.IsNullOrEmpty(buffer[0].Id), "The ID is null or empty.");
+            Assert.NotEqual(Guid.Empty, buffer[0].Id);
             Assert.Null(buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
