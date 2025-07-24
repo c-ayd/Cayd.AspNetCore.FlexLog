@@ -49,6 +49,26 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
                     await context.Response.WriteAsync("Default Endpoint");
                 });
 
+                endpoints.MapPost("/speed/log", async context =>
+                {
+                    context.Response.ContentType = "application/json";
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        Test = 123
+                    });
+                });
+
+                endpoints.MapPost("/speed/no-log", async context =>
+                {
+                    context.Response.ContentType = "application/json";
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        Test = 123
+                    });
+                });
+
                 endpoints.MapGet("/exception", context =>
                 {
                     throw new TestException("Test exception");

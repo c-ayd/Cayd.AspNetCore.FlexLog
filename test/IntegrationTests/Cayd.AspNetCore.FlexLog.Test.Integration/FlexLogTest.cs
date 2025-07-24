@@ -15,11 +15,19 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Cayd.AspNetCore.FlexLog.Test.Integration
 {
     public partial class FlexLogTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public FlexLogTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
 #if NET6_0_OR_GREATER
         internal static async Task<(IHost host, HttpClient client)> CreateHost(string appsettingsPath, FlexLogSink sink, FlexLogSink? fallbackSink = null)
         {
