@@ -101,6 +101,8 @@ public class MyService : IMyService
 }
 ```
 
+`NOTE`: If your services consume `IFlexLogger<T>` and you want to write unit tests for them, you can provide `FlexLoggerTest<T>` class under the `Cayd.AspNetCore.FlexLog.Testing` namespace for their constructors. By doing this, you can also access `Category` and `LogEntries` in this mock class.
+
 ## Options & Optimizations
 In order to customize FlexLog such as logging, ignoring or redacting specific data or routes etc., you need to define a configuration key called `FlexLog` in appsettings, user secrets or environment variables. When no configuration is defined, FlexLog uses the default configuration and logs everything. You can check out the [GitHub Wiki](https://github.com/c-ayd/Cayd.AspNetCore.FlexLog/wiki) to learn more about the options and the recommended optimizations.
 
