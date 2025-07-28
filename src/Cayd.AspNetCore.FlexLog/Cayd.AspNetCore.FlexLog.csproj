@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <PackageId>Cayd.AspNetCore.FlexLog</PackageId>
     <Title>Easy, flexible and detailed logging library for ASP.NET Core</Title>
-    <Version>2.0.1</Version>
+    <Version>2.0.2</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Authors>Cemal A. Aydeniz</Authors>
     <Description>An easy, flexible and detailed logging library for ASP.NET Core.</Description>
@@ -13,8 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog</RepositoryUrl>
     <PackageTags>cayd;aspnetcore;flexlog;log;logging;easy;flexible;detailed-logging;sink</PackageTags>
-    <PackageReleaseNotes>- The correlation ID and log ID logic is separated from each other. Correlation IDs are now null unless they are set manually or are set automatically via the FlexLogOption 'CorrelationIdKey'. Log IDs, on the other hand, are automatically set according to UUIDv7
-- A mock class called 'FlexLoggerTest&lt;T&gt;' is added for unit testing your services consuming 'IFlexLogger&lt;T&gt;'</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated MemoryStream usages to await using for asynchronous disposal</PackageReleaseNotes>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog/wiki</PackageProjectUrl>
   </PropertyGroup>

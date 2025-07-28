@@ -21,7 +21,9 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
                 new Claim(ClaimTypes.NameIdentifier, "TestUser"),
                 new Claim(ClaimTypes.Email, "test@test.com"),
                 new Claim(ClaimTypes.Name, "TestName"),
-                new Claim("CustomClaim", "CustomValue")
+                new Claim("CustomClaim", "CustomValue"),
+                new Claim(ClaimTypes.Role, "Role1"),
+                new Claim(ClaimTypes.Role, "Role2"),
             };
 
             var identity = new ClaimsIdentity(claims, "Test");

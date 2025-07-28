@@ -64,7 +64,14 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                         claimTypeName = claimTypeAlias!;
                     }
 
-                    logContext.Claims.Add(claimTypeName, claim.Value);
+                    if (logContext.Claims.ContainsKey(claimTypeName))
+                    {
+
+                    }
+                    else
+                    {
+                        logContext.Claims.Add(claimTypeName, claim.Value);
+                    }
                 }
             }
             else
@@ -81,7 +88,14 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
                             continue;
                     }
 
-                    logContext.Claims.Add(claim.Type, claim.Value);
+                    if (logContext.Claims.ContainsKey(claim.Type))
+                    {
+                        logContext.Claims[claim.Type] += "," + claim.Value;
+                    }
+                    else
+                    {
+                        logContext.Claims.Add(claim.Type, claim.Value);
+                    }
                 }
             }
         }
