@@ -191,7 +191,7 @@ namespace Cayd.AspNetCore.FlexLog.Services
         {
             try
             {
-                using var memoryStream = new MemoryStream(rawData);
+                await using var memoryStream = new MemoryStream(rawData);
                 using var json = await JsonDocument.ParseAsync(memoryStream);
 
                 if (redactedKeys.Count > 0)

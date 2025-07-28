@@ -195,7 +195,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
         private async Task AddResponseBodyToLogContext(HttpContext context, FlexLogContext logContext)
         {
             var originalStream = context.Response.Body;
-            using var memoryStream = new MemoryStream();
+            await using var memoryStream = new MemoryStream();
 
             context.Response.Body = memoryStream;
 
