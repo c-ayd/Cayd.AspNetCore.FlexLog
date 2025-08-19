@@ -5,10 +5,11 @@
     <Nullable>enable</Nullable>
     <PackageId>Cayd.AspNetCore.FlexLog</PackageId>
     <Title>Easy, flexible and detailed logging library for ASP.NET Core</Title>
-    <Version>2.0.3</Version>
+    <Version>3.0.0</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Authors>Cemal A. Aydeniz</Authors>
-    <Description>An easy, flexible and detailed logging library for ASP.NET Core.</Description>
+    <Description>- The ID property of the log context is removed
+- The correlation ID property is now set automatically</Description>
     <PackageIcon>nuget-logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog</RepositoryUrl>
