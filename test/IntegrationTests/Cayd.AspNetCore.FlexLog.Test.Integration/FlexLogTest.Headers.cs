@@ -1,4 +1,5 @@
 ﻿using Cayd.AspNetCore.FlexLog.Test.Integration.Sinks;
+using Cayd.AspNetCore.FlexLog.Test.Integration.Utilities;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,7 +30,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Equal("*/*", buffer[0].Headers["Accept"]);
             Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
             Assert.Equal("TestConnection", buffer[0].Headers["Connection"]);
-            Assert.Equal("1234-5678", buffer[0].Headers["Correlation-Id"]);
+            Assert.Equal(AddHeaderMiddleware.CorrelationId.ToString(), buffer[0].Headers["Correlation-Id"]);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);
@@ -61,8 +62,8 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Equal("*/*", buffer[0].Headers["Accept"]);
             Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
             Assert.Equal("TestConnection", buffer[0].Headers["Connection"]);
-            Assert.Equal("1234-5678", buffer[0].Headers["Correlation-Id"]);
-            Assert.Equal("1234-5678", buffer[0].CorrelationId);
+            Assert.Equal(AddHeaderMiddleware.CorrelationId.ToString(), buffer[0].Headers["Correlation-Id"]);
+            Assert.Equal(AddHeaderMiddleware.CorrelationId, buffer[0].CorrelationId);
 
 #if NET6_0_OR_GREATER
             await Dispose(host, client);
@@ -228,7 +229,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
                 Assert.Equal("*/*", buffer[0].Headers["Accept"]);
                 Assert.Equal("TestA", buffer[0].Headers["User-Agent"]);
                 Assert.Equal("TestC", buffer[0].Headers["Connection"]);
-                Assert.Equal("1234-", buffer[0].Headers["Correlation-Id"]);
+                Assert.Equal(AddHeaderMiddleware.CorrelationId.ToString().Substring(0, 5), buffer[0].Headers["Correlation-Id"]);
             }
 
 #if NET6_0_OR_GREATER

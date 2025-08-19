@@ -3,6 +3,7 @@
 using Cayd.AspNetCore.FlexLog.Enums;
 using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Test.Integration.Sinks;
+using Cayd.AspNetCore.FlexLog.Test.Integration.Utilities;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -160,12 +161,12 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
         private void CheckHeaders(IReadOnlyList<FlexLogContext> buffer)
         {
-            Assert.Equal("1234-5678", buffer[0].CorrelationId);
+            Assert.Equal(AddHeaderMiddleware.CorrelationId, buffer[0].CorrelationId);
 
             Assert.Equal("*/*", buffer[0].Headers["Accept"]);
             Assert.Equal("TestAgent", buffer[0].Headers["User-Agent"]);
             Assert.False(buffer[0].Headers.TryGetValue("Connection", out var _), "The connection header is in the log.");
-            Assert.Equal("1234-5678", buffer[0].Headers["Correlation-Id"]);
+            Assert.Equal(AddHeaderMiddleware.CorrelationId.ToString(), buffer[0].Headers["Correlation-Id"]);
         }
 
         private void CheckRequestBody(IReadOnlyList<FlexLogContext> buffer, List<string> strs, List<int> ints)

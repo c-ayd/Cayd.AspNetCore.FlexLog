@@ -124,8 +124,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.NotEqual(Guid.Empty, buffer[0].Id);
-            Assert.Null(buffer[0].CorrelationId);
+            Assert.NotEqual(Guid.Empty, buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
@@ -179,8 +178,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.NotEqual(Guid.Empty, buffer[0].Id);
-            Assert.Null(buffer[0].CorrelationId);
+            Assert.NotEqual(Guid.Empty, buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
@@ -218,8 +216,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.NotEqual(Guid.Empty, buffer[0].Id);
-            Assert.Null(buffer[0].CorrelationId);
+            Assert.NotEqual(Guid.Empty, buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
@@ -269,8 +266,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, fallbackSinkBuffer.Count);
-            Assert.NotEqual(Guid.Empty, fallbackSinkBuffer[0].Id);
-            Assert.Null(fallbackSinkBuffer[0].CorrelationId);
+            Assert.NotEqual(Guid.Empty, fallbackSinkBuffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(fallbackSinkBuffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(fallbackSinkBuffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
@@ -287,8 +283,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
             Assert.Null(fallbackSinkBuffer[0].LogEntries[1].Metadata);
 
             Assert.Equal(1, mainSinkBuffer.Count);
-            Assert.NotEqual(Guid.Empty, mainSinkBuffer[0].Id);
-            Assert.Null(mainSinkBuffer[0].CorrelationId);
+            Assert.NotEqual(Guid.Empty, mainSinkBuffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(mainSinkBuffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(mainSinkBuffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");
@@ -358,8 +353,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration
 
             // Assert
             Assert.Equal(1, buffer.Count);
-            Assert.NotEqual(Guid.Empty, buffer[0].Id);
-            Assert.Null(buffer[0].CorrelationId);
+            Assert.NotEqual(Guid.Empty, buffer[0].CorrelationId);
             Assert.False(string.IsNullOrEmpty(buffer[0].Protocol), "The protocol is null or empty.");
             Assert.False(string.IsNullOrEmpty(buffer[0].Endpoint), "The endpoint is null or empty.");
             Assert.True(buffer[0].ElapsedTimeInMilliseconds > 0, "The elapsed time is not calculated.");

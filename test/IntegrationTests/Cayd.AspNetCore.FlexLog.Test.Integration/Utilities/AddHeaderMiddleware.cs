@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
 
 namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
 {
     public class AddHeaderMiddleware
     {
+        public static readonly Guid CorrelationId = Guid.NewGuid();
+
         private readonly RequestDelegate _next;
 
         public AddHeaderMiddleware(RequestDelegate next)
@@ -17,7 +20,7 @@ namespace Cayd.AspNetCore.FlexLog.Test.Integration.Utilities
             context.Request.Headers["Accept"] = "*/*";
             context.Request.Headers["User-Agent"] = "TestAgent";
             context.Request.Headers["Connection"] = "TestConnection";
-            context.Request.Headers["Correlation-Id"] = "1234-5678";
+            context.Request.Headers["Correlation-Id"] = CorrelationId.ToString();
 
             await _next(context);
         }

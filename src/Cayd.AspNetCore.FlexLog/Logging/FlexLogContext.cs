@@ -1,5 +1,4 @@
 ﻿using Cayd.AspNetCore.FlexLog.Services;
-using Cayd.Uuid;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -13,13 +12,9 @@ namespace Cayd.AspNetCore.FlexLog.Logging
     public class FlexLogContext
     {
         /// <summary>
-        /// Unique ID of the log that is generated automatically.
+        /// Unique correlation ID that is genrated automatically. It can also be set automatically via the FlexLog option <c>'CorrelationIdKey'</c> if applicable.
         /// </summary>
-        public Guid Id { get; set; }
-        /// <summary>
-        /// Correlation ID of the log. It needs to be set manually or can be set automatically via the FlexLog option <c>'CorrelationIdKey'</c> if applicable.
-        /// </summary>
-        public string? CorrelationId { get; set; }
+        public Guid CorrelationId { get; set; }
         /// <summary>
         /// Protocol name of the request.
         /// </summary>
@@ -100,7 +95,7 @@ namespace Cayd.AspNetCore.FlexLog.Logging
         /// </summary>
         public FlexLogContext()
         {
-            Id = Uuid.Uuid.V7.Generate();
+            CorrelationId = Guid.NewGuid();
             Protocol = string.Empty;
             Endpoint = string.Empty;
             Timestamp = DateTime.UtcNow;

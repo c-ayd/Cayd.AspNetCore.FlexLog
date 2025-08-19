@@ -25,9 +25,12 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             logContext.TraceId = context.TraceIdentifier;
             if (_correlationIdKey != null)
             {
-                if (context.Request.Headers.TryGetValue(_correlationIdKey, out var correlationId))
+                if (context.Request.Headers.TryGetValue(_correlationIdKey, out var correlationIdStrValue))
                 {
-                    logContext.CorrelationId = correlationId.ToString();
+                    if (Guid.TryParse(correlationIdStrValue.ToString(), out var correlationId))
+                    {
+                        logContext.CorrelationId = correlationId;
+                    }
                 }
             }
         }
