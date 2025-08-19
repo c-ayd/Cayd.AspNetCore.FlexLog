@@ -5,15 +5,18 @@
     <Nullable>enable</Nullable>
     <PackageId>Cayd.AspNetCore.FlexLog</PackageId>
     <Title>Easy, flexible and detailed logging library for ASP.NET Core</Title>
-    <Version>2.0.3</Version>
+    <Version>3.0.1</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Authors>Cemal A. Aydeniz</Authors>
-    <Description>An easy, flexible and detailed logging library for ASP.NET Core.</Description>
+    <Description>An easy, flexible and detailed logging library for ASP.NET Core</Description>
     <PackageIcon>nuget-logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog</RepositoryUrl>
     <PackageTags>cayd;aspnetcore;flexlog;log;logging;easy;flexible;detailed-logging;sink</PackageTags>
-    <PackageReleaseNotes>Fixed the duplicate key issue when requests have multiple claims whose types are the same. They are now grouped under the same key and their values are separated by commas.</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      - The ID property of the log context is removed
+      - The correlation ID property is now set automatically
+    </PackageReleaseNotes>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog/wiki</PackageProjectUrl>
   </PropertyGroup>
