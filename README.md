@@ -76,7 +76,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 }
 ```
 
-Afterwards, logs are automatically created by FlexLog, and it flushes buffered logs to the sinks you register. In addition to the automatically captured logging data, you can also inject `IFlexLogger<T>` to your services to add log entries to the current log scope, and they are saved in the `LogEntries` property of `FlexLogContext`.
+Afterwards, logs are automatically created by FlexLog, and it flushes buffered logs to the sinks you register. In addition to the automatically captured logging data, you can also inject `IFlexLogger<T>` to your services to access the current log context (`FlexLogContext`) or add log entries to it. All log entries are saved in the `LogEntries` property of `FlexLogContext`.
 
 ```csharp
 public class MyService : IMyService
@@ -96,6 +96,9 @@ public class MyService : IMyService
             _flexLogger.LogInformation("myParam is negative");
         }
 
+        // You also can access the current log context
+        var logCorrelationId = _flexLogger.LogContext.CorrelationId;
+
         // ... code
     }
 }
@@ -111,4 +114,4 @@ In order to customize FlexLog such as logging, ignoring or redacting specific da
 - The FlexLog's flushing mechanism depends on both a buffer size and a timer. The buffer size controls the threshold of how many logs trigger the flush process, while the timer controls how much time should pass since the last log to flush the buffer.
 
 ## Extras
-FlexLog automatically logs only HTTP requests, however, it can be used to log other types of protocols. To do that, you need to create your own `FlexLogContext` during the communication and fill the values manually. Once it is completed, you need to add the log context to the FlexLog's log channel. So that, FlexLog handles it automatically at the background. To do that, you need to use the `AddLogContextToChannel` method in `FlexLogChannel`, which is a singleton service.
+FlexLog automatically logs only HTTP requests, however, it can also be used to log other types of protocols. To do that, you need to create your own `FlexLogContext` during the communication and fill the values manually. Once it is completed, you need to add the log context to the FlexLog's log channel. So that, FlexLog handles it automatically at the background. To do that, you need to use the `AddLogContextToChannel` method in `FlexLogChannel`, which is a singleton service.
