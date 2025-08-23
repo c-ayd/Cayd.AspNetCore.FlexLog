@@ -1,24 +1,24 @@
 ﻿using Cayd.AspNetCore.FlexLog.Enums;
 using Cayd.AspNetCore.FlexLog.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Cayd.AspNetCore.FlexLog.Services
 {
     public class FlexLogger<T> : IFlexLogger<T>
     {
-        private readonly IList<FlexLogEntry> _logEntries;
-        private readonly string _category;
+        public FlexLogContext LogContext { get; private set; }
 
-        public FlexLogger(IList<FlexLogEntry> logEntries)
+        private readonly string _category;
+        
+        public FlexLogger(FlexLogContext logContext)
         {
-            _logEntries = logEntries;
+            LogContext = logContext;
             _category = typeof(T).FullName ?? typeof(T).Name;
         }
 
         private void AddLogEntry(ELogLevel logLevel, string message, Exception? exception, object? metadata)
         {
-            _logEntries.Add(new FlexLogEntry()
+            LogContext.LogEntries.Add(new FlexLogEntry()
             {
                 LogLevel = logLevel,
                 Category = _category,

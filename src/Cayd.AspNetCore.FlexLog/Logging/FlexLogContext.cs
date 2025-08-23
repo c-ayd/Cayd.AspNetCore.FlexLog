@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace Cayd.AspNetCore.FlexLog.Logging
 {
     /// <summary>
-    /// Holds information about the detailed log.
+    /// Holds detailed information about the log.
     /// </summary>
     public class FlexLogContext
     {

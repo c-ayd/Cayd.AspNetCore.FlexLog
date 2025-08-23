@@ -1,4 +1,5 @@
 ﻿using Cayd.AspNetCore.FlexLog.Enums;
+using Cayd.AspNetCore.FlexLog.Logging;
 using System;
 
 namespace Cayd.AspNetCore.FlexLog
@@ -9,6 +10,11 @@ namespace Cayd.AspNetCore.FlexLog
     /// <typeparam name="T">Category name.</typeparam>
     public interface IFlexLogger<T>
     {
+        /// <summary>
+        /// Holds detailed information about the current log.
+        /// </summary>
+        FlexLogContext LogContext { get; }
+
         /// <summary>
         /// Adds a new log entry.
         /// </summary>

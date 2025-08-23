@@ -2,6 +2,7 @@
 using Cayd.AspNetCore.FlexLog.Logging;
 using Cayd.AspNetCore.FlexLog.Options;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -111,7 +112,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             }
             else
             {
-                var logContext = new FlexLogContext();
+                var logContext = context.RequestServices.GetRequiredService<FlexLogContext>();
 
                 AddIdsToLogContext(context, logContext);
                 AddProtocolToLogContext(context, logContext);

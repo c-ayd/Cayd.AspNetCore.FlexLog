@@ -45,9 +45,10 @@ namespace Cayd.AspNetCore.FlexLog.DependencyInjection
 
             services.Configure<FlexLogOptions>(configuration.GetSection(FlexLogOptions.OptionKey));
 
-            services.AddScoped<IList<FlexLogEntry>>(sp => new List<FlexLogEntry>());
+            services.AddScoped<FlexLogContext>();
             services.AddScoped(typeof(IFlexLogger<>), typeof(FlexLogger<>));
             services.AddSingleton(new FlexLogChannel(loggingOptions, config.GetSinks(), config.GetFallbackSinks()));
+
             services.AddHostedService<FlexLogBackgroundService>();
         }
 

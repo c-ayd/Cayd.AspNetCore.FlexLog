@@ -269,9 +269,6 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
         private void AddLogContextToChannel(HttpContext context, FlexLogContext logContext)
         {
-            var logEntries = context.RequestServices.GetRequiredService<IList<FlexLogEntry>>();
-            logContext.LogEntries = new List<FlexLogEntry>(logEntries);
-
             var logChannel = context.RequestServices.GetRequiredService<FlexLogChannel>();
             logChannel.AddLogContextToChannel(logContext);
         }
