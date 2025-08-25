@@ -229,7 +229,7 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
             {
                 logContext.ResponseBodyContentType = context.Response.ContentType?.Split(';', 2, StringSplitOptions.TrimEntries)[0];
 
-                if (logContext.ResponseStatusCode == null)
+                if (logContext.ResponseStatusCode == null && !IsContentTypeGrpc(logContext.ResponseBodyContentType))
                 {
                     logContext.ResponseStatusCode = context.Response.StatusCode;
                 }
@@ -256,6 +256,14 @@ namespace Cayd.AspNetCore.FlexLog.Middlewares
 
             return contentType.Equals(MediaTypeNames.Application.Json, StringComparison.OrdinalIgnoreCase) ||
                 contentType.EndsWith("+json", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsContentTypeGrpc(string? contentType)
+        {
+            if (contentType == null)
+                return false;
+
+            return contentType.StartsWith("application/grpc", StringComparison.OrdinalIgnoreCase);
         }
 
         private void AddExceptionToLogContext(HttpContext context, FlexLogContext logContext, Exception exception)
