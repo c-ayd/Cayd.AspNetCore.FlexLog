@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <PackageId>Cayd.AspNetCore.FlexLog</PackageId>
     <Title>Easy, flexible and detailed logging library for ASP.NET Core</Title>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Authors>Cemal A. Aydeniz</Authors>
     <Description>An easy, flexible and detailed logging library for ASP.NET Core</Description>
@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog</RepositoryUrl>
     <PackageTags>cayd;aspnetcore;flexlog;log;logging;easy;flexible;detailed-logging;sink</PackageTags>
-    <PackageReleaseNotes>The log context is now accessible via IFlexLogger</PackageReleaseNotes>
+    <PackageReleaseNotes>Status codes of the responses are now ignored if the content type is gRPC</PackageReleaseNotes>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/c-ayd/Cayd.AspNetCore.FlexLog/wiki</PackageProjectUrl>
   </PropertyGroup>
